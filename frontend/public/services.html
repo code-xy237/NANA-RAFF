@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NANA RAFF | Services</title>
+  <style>
+    :root {
+  --primary-color:   #27ae60;   /* vert principal */
+  --secondary-color: #2c3e50;   /* bleu/gris très sombre */
+  --background-color:#ecf0f1;   /* gris très clair */
+  --text-color:      #2c3e50;   /* texte */
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: var(--background-color);
+  color: var(--text-color);
+}
+
+/* HEADER */
+.main-header {
+  background: var(--secondary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 3rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.logo span { color: var(--primary-color); }
+.main-header nav ul {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+.main-header nav a {
+  text-decoration: none;
+  color: white;
+  transition: color 0.3s;
+}
+.main-header nav a.active,
+.main-header nav a:hover {
+  color: var(--primary-color);
+}
+
+/* HERO VIDÉO */
+.hero {
+  position: relative;
+  height: 60vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.background-video {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.hero-content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  color: white;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+.hero-content h1 {
+  font-size: 3rem;
+  margin: 0;
+}
+.hero-content p {
+  font-size: 1.2rem;
+}
+
+/* SECTION SERVICES */
+.services {
+  padding: 4rem 2rem;
+  text-align: center;
+}
+.services h2 {
+  font-size: 2.2rem;
+  margin-bottom: 2rem;
+  color: var(--secondary-color);
+}
+.services-grid {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.service-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transform: translateY(40px);
+  opacity: 1;
+  transition: all 0.6s ease;
+}
+.service-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+.service-card h3 {
+  color: var(--primary-color);
+  margin-top: 1rem;
+}
+.service-card p {
+  padding: 0 1rem 1.5rem;
+}
+.service-card.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* FOOTER */
+.main-footer {
+  background: var(--secondary-color);
+  color: white;
+  text-align: center;
+  padding: 1rem;
+  margin-top: 2rem;
+}
+
+header{position:relative;z-index:30;background:linear-gradient(90deg, rgba(255,255,255,0.8), rgba(255,255,255,0.6));backdrop-filter: blur(6px);box-shadow: 0 6px 18px rgba(44,62,80,0.08);}
+.nav{max-width:1200px;margin:0 auto;padding:18px 20px;display:flex;align-items:center;gap:18px;justify-content:space-between;}
+.brand{display:flex;align-items:center;gap:12px;transform: translateY(-2px);}
+.logo-img{width:60px;height:auto;border-radius:30%;}
+nav ul{display:flex;gap:12px;align-items:center;list-style:none;}
+nav li{padding:8px 12px;border-radius:8px;color:var(--muted);font-weight:600;}
+nav li:hover{color:var(--secondary-color); background: rgba(44,62,80,0.03);}
+
+*{box-sizing:border-box;margin:0;padding:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+html,body{height:100%;background:var(--background-color);color:var(--text-color);}
+a{color:inherit;text-decoration:none;}
+
+footer{background:#0b1220;color:#cbd5e1;margin-top:30px;padding:20px;}
+footer a{color:#e2e8f0;}
+.footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:18px;padding:26px 0;}
+@media(max-width:820px){.footer-grid{grid-template-columns:1fr 1fr;}}
+.copyright{border-top:1px solid rgba(255,255,255,.08);padding:12px 0;color:#94a3b8;}
+
+  </style>
+</head>
+<body>
+  <header>
+  <div class="nav">
+    <div class="brand">
+      <img src="image/logo_1.jpeg" alt="Logo NANA RAFF" class="logo-img">
+      <div>
+        <h1>NANA RAFF</h1>
+        <div style="font-size:12px;color:var(--muted)">Service | Sante</div>
+      </div>
+    </div>
+    <nav>
+      <ul>
+        <a href="index.html"><li>Accueil</li></a>
+        <a href="D:\NANA RAFF final\frontend\public\partenariats.html"><li>Partenariat</li></a>
+        <a href="D:\NANA RAFF final\frontend\public\conseil.html"><li>Conseils</li></a>
+        <a href="D:\NANA RAFF final\frontend\public\contact.html"><li>Contact</li></a>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+  <!-- Vidéo de fond -->
+  <section class="hero">
+    <video autoplay muted loop playsinline class="background-video">
+      <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+      Votre navigateur ne supporte pas la vidéo.
+    </video>
+    <div class="hero-content">
+      <h1>Nos Services</h1>
+      <p>Une expérience d'achat en ligne éco-responsable et unique</p>
+    </div>
+  </section>
+
+  <section class="services">
+    <h2>Ce que nous proposons</h2>
+    <div class="services-grid">
+      <div class="service-card">
+        <img src="https://images.pexels.com/photos/6169683/pexels-photo-6169683.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Livraison rapide">
+        <h3>Livraison Express</h3>
+        <p>Recevez vos produits en un temps record, partout au Cameroun et à l'international.</p>
+      </div>
+
+      <div class="service-card">
+        <img src="https://th.bing.com/th/id/OIP.ujv_32mV0ndlcnIGaHbIfgHaEK?w=333&h=187&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3" alt="Support client">
+        <h3>Support 24/7</h3>
+        <p>Une équipe disponible jour et nuit pour répondre à vos questions et besoins spécifiques.</p>
+      </div>
+
+      <div class="service-card">
+        <img src="data:image/webp;base64,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" alt="Paiement sécurisé">
+        <h3>Paiement Sécurisé</h3>
+        <p>Des transactions chiffrées pour garantir la confidentialité de vos informations.</p>
+      </div>
+
+      <div class="service-card">
+        <img src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Conseils personnalisés">
+        <h3>Conseils Personnalisés</h3>
+        <p>Des experts à votre écoute pour vous guider dans vos choix et utilisations.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+  <div class="container footer-grid">
+    <div>
+      <h3 style="color:#fff;margin:0 0 8px">NANA RAFF</h3>
+      <p>Douala, Cameroun<br>+237 675 47 94 04<br>tientcheujunior9@gmail.com</p>
+    </div>
+    <div>
+      <h4 style="color:#fff;margin:0 0 8px">Liens</h4>
+      <a href="index.html">Accueil</a><br>
+      <a href="service.html">Services</a><br>
+      <a href="conseil.html">Conseils</a><br>
+      <a href="partenariat.html">Partenariat</a><br>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div>
+      <h4 style="color:#fff;margin:0 0 8px">Légal</h4>
+      <a href="#">Mentions légales</a><br>
+      <a href="#">Confidentialité</a>
+    </div>
+    <div>
+      <h4 style="color:#fff;margin:0 0 8px">Réseaux</h4>
+      <div class="flex">
+        <a href="https://www.facebook.com">Facebook</a>
+        <a href="https://www.instagram.com">Instagram</a>
+        <a href="https://twitter.com">X</a>
+      </div>
+    </div>
+  </div>
+  <div class="container copyright">© <span id="year"></span> NANA RAFF - Borel Premier copyright 2025</div>
+</footer>
+
+  <script src="D:\NANA RAFF final\frontend\public\services.js"></script>
+</body>
+</html>

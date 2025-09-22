@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NANA RAFF — Boutique</title>
+  <style>
+    :root {
+      --primary-color:   #27ae60;   /* vert principal */
+      --secondary-color: #2c3e50;   /* bleu/gris très sombre */
+      --background-color:#ecf0f1;   /* gris très clair, presque blanc */
+      --text-color:      #2c3e50;   /* réutilise le gris/bleu foncé */
+      --muted: #7f8c8d;
+      --glass: rgba(255,255,255,0.65);
+    }
+    /* Reset léger */
+    * {box-sizing: border-box; margin:0; padding:0; font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;}
+    html,body {height:100%; background:var(--background-color); color:var(--text-color);}
+    a{color:inherit; text-decoration:none}
+
+    /* Header */
+    header {
+      position:relative;
+      z-index:30;
+      background: linear-gradient(90deg, rgba(255,255,255,0.8), rgba(255,255,255,0.6));
+      backdrop-filter: blur(6px);
+      box-shadow: 0 6px 18px rgba(44,62,80,0.08);
+    }
+    .nav {
+      max-width:1200px;
+      margin:0 auto;
+      padding:18px 20px;
+      display:flex;
+      align-items:center;
+      gap:18px;
+      justify-content:space-between;
+    }
+    .brand {
+      display:flex; align-items:center; gap:12px;
+      transform: translateY(-2px);
+    }
+    .logo {
+      width:56px; height:56px; border-radius:12px;
+      background: linear-gradient(135deg,var(--primary-color), #16a085);
+      display:flex; align-items:center; justify-content:center;
+      color:white; font-weight:700; font-size:18px; box-shadow: 0 6px 20px rgba(39,174,96,0.2);
+    }
+    .brand h1 {font-size:18px; letter-spacing:0.6px;}
+    nav ul {display:flex; gap:12px; align-items:center; list-style:none;}
+    nav li {padding:8px 12px; border-radius:8px; color:var(--muted); font-weight:600;}
+    nav li:hover {color:var(--secondary-color); background: rgba(44,62,80,0.03);}
+
+    .actions {display:flex; gap:10px; align-items:center;}
+    .search {
+      display:flex; align-items:center; gap:8px;
+      background:var(--glass); padding:8px 10px; border-radius:10px;
+      box-shadow: 0 4px 10px rgba(44,62,80,0.04);
+    }
+    .search input {
+      border:0; background:transparent; outline:none; width:220px; font-weight:600;
+    }
+    .btn {
+      background:var(--primary-color); color:white; padding:10px 14px; border-radius:10px; font-weight:700; border:0; cursor:pointer;
+      box-shadow: 0 8px 18px rgba(39,174,96,0.18); transition:transform .18s ease;
+    }
+    .btn.secondary {background:transparent; color:var(--secondary-color); border:1px solid rgba(44,62,80,0.06); box-shadow:none}
+    .btn:active{transform:translateY(1px)}
+
+    /* Hero / Video background */
+    .hero-wrap {position:relative; overflow:hidden;}
+    .video-bg {
+      position:relative;
+      height:420px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .video-bg video {
+      position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); min-width:100%; min-height:100%; object-fit:cover;
+      filter: saturate(0.95) contrast(0.95) brightness(0.75);
+    }
+    .hero-overlay {
+      position:relative; z-index:2; max-width:1200px; margin:0 auto; padding:48px 20px; display:flex; justify-content:space-between; gap:20px; align-items:center;
+    }
+    .hero-content {
+      color:white;
+      backdrop-filter: blur(4px);
+      max-width:700px;
+      text-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      animation: slideIn .9s ease both;
+    }
+    @keyframes slideIn {
+      from { transform: translateY(18px); opacity:0 }
+      to { transform: translateY(0); opacity:1 }
+    }
+    .hero-content h2 {font-size:34px; margin-bottom:12px; font-weight:800; letter-spacing:0.4px}
+    .hero-content p {opacity:0.95; margin-bottom:18px; color:rgba(255,255,255,0.95); line-height:1.4;}
+
+    .hero-cta {display:flex; gap:12px; margin-top:10px;}
+    .glass-card {
+      background:linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border-radius:12px; padding:16px; color:white; box-shadow: 0 8px 40px rgba(2,6,23,0.45);
+    }
+
+    /* Main content */
+    main {max-width:1200px; margin:-40px auto 80px; padding:20px; position:relative; z-index:10}
+    .controls {display:flex; gap:12px; align-items:center; margin-bottom:18px; flex-wrap:wrap;}
+    .chips {display:flex; gap:10px; flex-wrap:wrap;}
+    .chip {
+      padding:8px 12px; border-radius:20px; background:white; border:1px solid rgba(44,62,80,0.06); font-weight:700; color:var(--secondary-color);
+      cursor:pointer; transition:transform .15s ease, box-shadow .15s ease;
+    }
+    .chip.active {background:var(--primary-color); color:white; box-shadow: 0 8px 18px rgba(39,174,96,0.14); transform:translateY(-4px) }
+
+    /* Product grid */
+    .grid {display:grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr)); gap:18px;}
+    .card {
+      background:white; border-radius:14px; overflow:hidden; box-shadow: 0 10px 30px rgba(44,62,80,0.06); transform-origin:center;
+      transition: transform .25s ease, box-shadow .25s ease;
+      display:flex; flex-direction:column;
+    }
+    .card:hover {transform:translateY(-8px); box-shadow: 0 18px 50px rgba(44,62,80,0.12);}
+    .card .media {height:180px; overflow:hidden;}
+    .card img {width:100%; height:100%; object-fit:cover; display:block; transition:transform .8s cubic-bezier(.2,.9,.2,1);}
+    .card:hover img {transform:scale(1.06) rotate(-0.2deg);}
+    .card .body {padding:14px; display:flex; flex-direction:column; gap:8px; flex:1;}
+    .card h3 {font-size:16px; margin-bottom:4px; color:var(--secondary-color)}
+    .price-row {display:flex; justify-content:space-between; align-items:center; margin-top:auto;}
+    .price {font-weight:900; color:var(--primary-color); font-size:18px}
+    .tag {font-size:12px; color:var(--muted); font-weight:700; padding:6px 8px; border-radius:8px; background:rgba(44,62,80,0.04)}
+
+    /* Modal */
+    .modal-backdrop {
+      position:fixed; inset:0; background:rgba(2,6,23,0.5); display:flex; align-items:center; justify-content:center; z-index:80; opacity:0; visibility:hidden; transition:opacity .18s ease;
+    }
+    .modal-backdrop.show {opacity:1; visibility:visible}
+    .modal {
+      width:min(920px, 96%); background:white; border-radius:12px; overflow:hidden; display:grid; grid-template-columns: 1fr 1fr; gap:0;
+      box-shadow: 0 30px 80px rgba(2,6,23,0.35); transform: translateY(20px); transition: transform .22s ease;
+    }
+    .modal-backdrop.show .modal {transform:translateY(0)}
+    .modal .left {min-height:320px;}
+    .modal .left img {width:100%; height:100%; object-fit:cover; display:block;}
+    .modal .right {padding:18px; display:flex; flex-direction:column; gap:10px;}
+    .modal h2 {margin-bottom:6px}
+    .meta {display:flex; gap:8px; align-items:center; color:var(--muted); font-weight:700}
+    .desc {line-height:1.45; color:#334155; margin-top:6px}
+    .specs {background: #f8fafc; padding:12px; border-radius:8px; margin-top:8px; font-size:14px}
+    .close {margin-left:auto; background:transparent; border:0; font-size:20px; cursor:pointer; color:var(--muted)}
+
+    /* Footer */
+    /* Footer */
+    footer{background:#0b1220;color:#cbd5e1;margin-top:30px}
+    footer a{color:#e2e8f0}
+    .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:18px;padding:26px 0}
+    @media (max-width:820px){.footer-grid{grid-template-columns:1fr 1fr}}
+    .copyright{border-top:1px solid rgba(255,255,255,.08);padding:12px 0;color:#94a3b8}
+
+    /* Responsive */
+    @media (max-width:900px) {
+      .modal {grid-template-columns: 1fr; }
+      .hero-content h2 {font-size:26px}
+      .video-bg {height:320px}
+    }
+
+    .logo-img {
+        width: 60px;   /* largeur du logo */
+        height: auto;  /* conserve le ratio */
+        object-fit: contain;
+        display: block;
+        border-radius: 30%;
+    }
+
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="brand">
+      <div class="logo" aria-label="logo">
+          <img src="image/logo_1.jpeg" alt="Logo NANA RAFF" class="logo-img">
+        </div>
+      <div>
+        <h1>NANA RAFF</h1>
+        <div style="font-size:12px;color:var(--muted)">Boutique | Bien-être & Beauté</div>
+      </div>
+    </div>
+
+    <nav>
+      <ul>
+        <a href="index.html"><li>Accueil</li></a>
+        <a href="services.html"><li>Services</li></a>
+        <a href="conseil.html"><li>Conseils</li></a>
+        <a href="partenariats.html"><li>partenariat</li></a>
+        <a href="contact.html"><li>Contact</li></a>
+      </ul>
+    </nav>
+
+    <div class="actions">
+      <div class="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="11" r="6" stroke="#2c3e50" stroke-width="2" /></svg>
+        <input id="searchInput" placeholder="Rechercher un produit, ex : sérum" />
+      </div>
+      <button class="btn secondary" id="viewCart">Panier (0)</button>
+      <button class="btn"><a href="login_sign.html">Se connecter</a></button>
+    </div>
+  </div>
+</header>
+
+<section class="hero-wrap">
+  <div class="video-bg" aria-hidden="true">
+    <!-- Vidéo publique intégrée (Big Buck Bunny sample) -->
+    <video autoplay muted loop playsinline>
+      <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+      <!-- fallback image -->
+      <img src="https://picsum.photos/id/1018/1600/600" alt="hero">
+    </video>
+
+    <div class="hero-overlay">
+      <div class="hero-content">
+        <div class="glass-card">
+          <h2>Bienvenue chez NANA RAFF — la beauté naturelle, raffinée.</h2>
+          <p>Découvrez notre sélection premium de soins, compléments et accessoires. Produits testés, détails transparents — composition, précautions et modes d'utilisation clairement indiqués.</p>
+          <div class="hero-cta">
+            <button class="btn" onclick="filterBy('Tous')">Voir les produits</button>
+            <button class="btn secondary" onclick="filterBy('Skincare')">Skincare</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="width:340px;">
+        <div class="glass-card" style="padding:14px;">
+          <div style="display:flex;align-items:center;gap:12px;">
+            <div class="logo" aria-label="logo">
+              <img src="image/logo_1.jpeg" alt="Logo NANA RAFF" class="logo-img">
+            </div>
+            <div>
+              <div style="font-weight:800">Offre de la semaine</div>
+              <div style="font-size:13px;color:rgba(255,255,255,0.9)">Sérum hydratant -20% | Livraison offerte</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<main>
+  <div class="controls">
+    <div class="chips" id="categoryChips">
+      <!-- chips générées par JS -->
+    </div>
+    <div style="margin-left:auto; display:flex; gap:10px; align-items:center;">
+      <select id="sortBy" style="padding:8px 12px; border-radius:10px; border:1px solid rgba(44,62,80,0.06); font-weight:700;">
+        <option value="popular">Trier : Populaire</option>
+        <option value="price-asc">Prix : croissant</option>
+        <option value="price-desc">Prix : décroissant</option>
+      </select>
+    </div>
+  </div>
+
+  <section class="grid" id="productGrid">
+    <!-- produits générés par JS -->
+  </section>
+</main>
+
+<!-- Modal produit -->
+<div class="modal-backdrop" id="modalBackdrop" role="dialog" aria-hidden="true">
+  <div class="modal" role="document" aria-modal="true">
+    <div class="left">
+      <img id="modalImage" src="" alt="Produit">
+    </div>
+    <div class="right">
+      <div style="display:flex; gap:10px; align-items:center;">
+        <div>
+          <h2 id="modalTitle">Titre produit</h2>
+          <div class="meta"><span id="modalCategory">Catégorie</span> • <span id="modalPrice">€0.00</span></div>
+        </div>
+        <button class="close" id="closeModal" title="Fermer">✕</button>
+      </div>
+
+      <div class="desc" id="modalDesc">Description courte du produit...</div>
+
+      <div class="specs">
+        <strong>Utilisation :</strong>
+        <div id="modalUsage" style="margin-top:6px">Mode d'emploi...</div>
+      </div>
+
+      <div class="specs">
+        <strong>Précautions :</strong>
+        <div id="modalPrecaution" style="margin-top:6px">Précautions...</div>
+      </div>
+
+      <div class="specs">
+        <strong>Composition :</strong>
+        <div id="modalComposition" style="margin-top:6px">Ingrédients...</div>
+      </div>
+
+      <div style="margin-top:12px; display:flex; gap:10px; align-items:center;">
+        <button class="btn" id="addToCart">Ajouter au panier</button>
+        <button class="btn secondary" id="buyNow">Acheter maintenant</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+  <footer>
+    <div class="container footer-grid">
+      <div>
+        <h3 style="color:#fff;margin:0 0 8px">NANA RAFF</h3>
+        <p>Douala, Cameroun<br>+237 675 47 94 04<br>tientcheujunior9@gmail.com</p>
+      </div>
+      <div>
+        <h4 style="color:#fff;margin:0 0 8px">Liens</h4>
+        <a href="#catalogue">Produits</a><br>
+        <a href="#services">Services</a><br>
+        <a href="#blog">Conseils</a>
+      </div>
+      <div>
+        <h4 style="color:#fff;margin:0 0 8px">Légal</h4>
+        <a href="#">Mentions légales</a><br>
+        <a href="#">Confidentialité</a>
+      </div>
+      <div>
+        <h4 style="color:#fff;margin:0 0 8px">Réseaux</h4>
+        <div class="flex">
+          <a href="https://wa.me/qr/I3CWXTHATUMOI1">Facebook</a>
+          <a href="https://wa.me/qr/I3CWXTHATUMOI1">Instagram</a>
+          <a href="https://wa.me/qr/I3CWXTHATUMOI1">X</a>
+        </div>
+      </div>
+    </div>
+    <div class="container copyright">© <span id="year"></span> NANA RAFF - Borel Premier copyright 2025</div>
+  </footer>
+
+<script src="D:\NANA RAFF final\frontend\public\produits.js"></script>
+
+</body>
+</html>

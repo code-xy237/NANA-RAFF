@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NANA RAFF — Contact</title>
+  <style>
+    :root {
+      --primary-color:   #27ae60;
+      --secondary-color: #2c3e50;
+      --background-color:#ecf0f1;
+      --text-color:      #2c3e50;
+      --muted: #7f8c8d;
+      --glass: rgba(255,255,255,0.65);
+    }
+
+    *{box-sizing:border-box;margin:0;padding:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;}
+    html,body{height:100%;background:var(--background-color);color:var(--text-color);}
+    a{color:inherit;text-decoration:none;}
+
+    header{position:relative;z-index:30;background:linear-gradient(90deg, rgba(255,255,255,0.8), rgba(255,255,255,0.6));backdrop-filter: blur(6px);box-shadow: 0 6px 18px rgba(44,62,80,0.08);}
+    .nav{max-width:1200px;margin:0 auto;padding:18px 20px;display:flex;align-items:center;gap:18px;justify-content:space-between;}
+    .brand{display:flex;align-items:center;gap:12px;transform: translateY(-2px);}
+    .logo-img{width:60px;height:auto;border-radius:30%;}
+    nav ul{display:flex;gap:12px;align-items:center;list-style:none;}
+    nav li{padding:8px 12px;border-radius:8px;color:var(--muted);font-weight:600;}
+    nav li:hover{color:var(--secondary-color); background: rgba(44,62,80,0.03);}
+
+    main{max-width:1200px;margin:80px auto 80px;padding:20px;position:relative;z-index:10;}
+    h2{text-align:center;font-size:28px;margin-bottom:12px;color:var(--secondary-color);}
+    .sub{text-align:center;margin-bottom:24px;color:var(--muted);}
+
+    .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+    @media(max-width:900px){.contact-grid{grid-template-columns:1fr;}}
+    
+    .contact-info{display:flex;flex-direction:column;gap:16px;background:white;padding:24px;border-radius:14px;box-shadow: 0 10px 30px rgba(44,62,80,0.06);}
+    .contact-info h3{margin-bottom:6px;color:var(--secondary-color);}
+    .contact-info p{color:var(--muted);}
+    .contact-info a{color:var(--primary-color);}
+
+    form.contact-form{display:flex;flex-direction:column;gap:16px;background:white;padding:24px;border-radius:14px;box-shadow: 0 10px 30px rgba(44,62,80,0.06);}
+    form input, form textarea{padding:12px;border-radius:10px;border:1px solid rgba(44,62,80,0.1);font-size:14px;outline:none;}
+    form textarea{resize:none;height:140px;}
+    .btn{background:var(--primary-color);color:white;padding:12px 18px;border-radius:10px;font-weight:700;border:0;cursor:pointer;transition:transform .18s ease;}
+    .btn:hover{transform:translateY(-2px);}
+    
+    .map-container{margin-top:40px;border-radius:14px;overflow:hidden;box-shadow: 0 10px 30px rgba(44,62,80,0.06);}
+    iframe{width:100%;height:320px;border:0;}
+
+    footer{background:#0b1220;color:#cbd5e1;margin-top:30px;padding:20px;}
+    footer a{color:#e2e8f0;}
+    .footer-grid{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:18px;padding:26px 0;}
+    @media(max-width:820px){.footer-grid{grid-template-columns:1fr 1fr;}}
+    .copyright{border-top:1px solid rgba(255,255,255,.08);padding:12px 0;color:#94a3b8;}
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="nav">
+    <div class="brand">
+      <img src="image/logo_1.jpeg" alt="Logo NANA RAFF" class="logo-img">
+      <div>
+        <h1>NANA RAFF</h1>
+        <div style="font-size:12px;color:var(--muted)">Boutique | Bien-être & Beauté</div>
+      </div>
+    </div>
+    <nav>
+      <ul>
+        <a href="index.html"><li>Accueil</li></a>
+        <a href="D:\NANA RAFF final\frontend\public\partenariats.html"><li>Partenariat</li></a>
+        <a href="D:\NANA RAFF final\frontend\public\conseil.html"><li>Conseils</li></a>
+        <a href="D:\NANA RAFF final\frontend\public\contact.html"><li>Contact</li></a>
+      </ul>
+    </nav>
+  </div>
+</header>
+</header>
+
+<main>
+  <h2>Contactez-nous</h2>
+  <div class="sub">Nous sommes à votre écoute pour toute question, suggestion ou partenariat.</div>
+
+  <div class="contact-grid">
+    <div class="contact-info">
+      <h3>Informations</h3>
+      <p>Douala, Cameroun</p>
+      <p>Téléphone : <a href="tel:+237675479404">+237 675 47 94 04</a></p>
+      <p>Email : <a href="mailto:tientcheujunior9@gmail.com">tientcheujunior9@gmail.com</a></p>
+      <p>Réseaux sociaux :</p>
+      <p><a href="https://www.facebook.com">Facebook</a> | <a href="https://www.instagram.com">Instagram</a> | <a href="https://twitter.com">X</a></p>
+    </div>
+
+    <form class="contact-form" id="contactForm">
+      <input type="text" id="name" placeholder="Votre nom" required>
+      <input type="email" id="email" placeholder="Votre email" required>
+      <input type="text" id="subject" placeholder="Sujet" required>
+      <textarea id="message" placeholder="Votre message" required></textarea>
+      <button type="submit" class="btn">Envoyer</button>
+    </form>
+  </div>
+
+  <div class="map-container">
+    <iframe 
+      src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.569982034479!2d9.719571775353567!3d4.051651396937917!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x10610e3dc9c49fef%3A0xc3174a1297fc50d4!2sDouala%2C%20Cameroun!5e0!3m2!1sfr!2s!4v1695123456789" 
+      allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
+  </div>
+</main>
+
+<footer>
+  <div class="container footer-grid">
+    <div>
+      <h3 style="color:#fff;margin:0 0 8px">NANA RAFF</h3>
+      <p>Douala, Cameroun<br>+237 675 47 94 04<br>tientcheujunior9@gmail.com</p>
+    </div>
+    <div>
+      <h4 style="color:#fff;margin:0 0 8px">Liens</h4>
+      <a href="index.html">Accueil</a><br>
+      <a href="frontend/public/services.html">Services</a><br>
+      <a href="contact.html">Contact</a>
+    </div>
+    <div>
+      <h4 style="color:#fff;margin:0 0 8px">Légal</h4>
+      <a href="#">Mentions légales</a><br>
+      <a href="#">Confidentialité</a>
+    </div>
+    <div>
+      <h4 style="color:#fff;margin:0 0 8px">Réseaux</h4>
+      <div class="flex">
+        <a href="https://www.facebook.com">Facebook</a>
+        <a href="https://www.instagram.com">Instagram</a>
+        <a href="https://twitter.com">X</a>
+      </div>
+    </div>
+  </div>
+  <div class="container copyright">© <span id="year"></span> NANA RAFF - Borel Premier copyright 2025</div>
+</footer>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  document.getElementById('contactForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    alert('Merci pour votre message ! Nous vous répondrons bientôt.');
+    this.reset();
+  });
+</script>
+
+</body>
+</html>

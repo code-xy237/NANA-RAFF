@@ -1,0 +1,1105 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NANA RAFF — Admin Dashboard</title>
+
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    :root{
+      --primary-color:#27ae60;
+      --secondary-color:#2c3e50;
+      --background:#ecf0f1;
+      --card:#ffffff;
+      --muted:#7f8c8d;
+      --glass: rgba(255,255,255,0.7);
+      --shadow: 0 12px 30px rgba(44,62,80,0.08);
+      --accent: #16a085;
+      --danger: #e74c3c;
+      --success: #2ecc71;
+      --max-width:1200px;
+    }
+
+    /* Basic reset */
+    *{box-sizing:border-box}
+    html,body{height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;background:var(--background);color:var(--secondary-color);margin:0;padding:0}
+    a{color:inherit}
+
+    /* Layout */
+    .wrap{max-width:var(--max-width);margin:28px auto;padding:18px;display:grid;grid-template-columns:280px 1fr;gap:20px}
+    @media (max-width:980px){.wrap{grid-template-columns:1fr; padding:12px}}
+    header.admin-header{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:54px;height:54px;border-radius:12px;background:linear-gradient(135deg,var(--primary-color),var(--accent));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;box-shadow:0 8px 20px rgba(39,174,96,0.16)}
+    .brand h1{font-size:18px;margin:0}
+
+    /* Left sidebar */
+    .sidebar{background:var(--card);border-radius:12px;box-shadow:var(--shadow);padding:12px;height:calc(100vh - 88px);overflow:auto;position:sticky;top:20px}
+    .nav-item{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;color:var(--secondary-color);cursor:pointer;font-weight:700}
+    .nav-item:hover{background:rgba(39,174,96,0.06)}
+    .nav-item.active{background:linear-gradient(90deg,rgba(39,174,96,0.12),rgba(39,174,96,0.04));color:var(--primary-color)}
+    .sidebar-section{margin-top:14px;font-size:13px;color:var(--muted);padding:6px 10px}
+
+    /* Main content */
+    .content{display:flex;flex-direction:column;gap:16px}
+    .grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+    .card{background:var(--card);border-radius:12px;padding:14px;box-shadow:var(--shadow)}
+    .kpi{display:flex;gap:12px;align-items:center}
+    .kpi .num{font-size:20px;font-weight:800;color:var(--primary-color)}
+    .controls{display:flex;gap:10px;align-items:center;justify-content:flex-end}
+
+    /* Orders table */
+    .table {width:100%;border-collapse:collapse;font-size:14px}
+    .table thead th{text-align:left;padding:10px 8px;color:var(--muted);font-weight:700;border-bottom:1px solid #eef2f6}
+    .table tbody td{padding:10px 8px;border-bottom:1px solid #f3f5f7}
+    .chip{padding:6px 10px;border-radius:999px;background:rgba(44,62,80,0.06);font-weight:700;font-size:12px;color:var(--muted)}
+    .status {padding:6px 10px;border-radius:8px;font-weight:700;font-size:13px}
+    .status.pending{background:#fef3c7;color:#92400e}
+    .status.processing{background:#e6fffa;color:#0f766e}
+    .status.shipped{background:#ecfdf5;color:#065f46}
+    .status.cancelled{background:#fee2e2;color:#b91c1c}
+
+    /* Posts */
+    .post{display:flex;gap:12px;padding:12px;border-radius:10px;border:1px solid rgba(44,62,80,0.04)}
+    .post .meta{font-size:12px;color:var(--muted)}
+    .post .actions{margin-left:auto;display:flex;gap:6px}
+
+    /* Users */
+    .user-row{display:flex;align-items:center;gap:12px;padding:10px;border-bottom:1px solid #f3f5f7}
+    .avatar{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,var(--primary-color),var(--accent));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800}
+
+    /* Utilities */
+    .search{display:flex;align-items:center;gap:8px;padding:8px;border-radius:10px;background:#fff;border:1px solid rgba(44,62,80,0.04)}
+    .btn{background:var(--primary-color);color:#fff;padding:10px 12px;border-radius:10px;border:0;font-weight:800;cursor:pointer}
+    .btn.ghost{background:transparent;color:var(--secondary-color);border:1px solid rgba(44,62,80,0.06)}
+
+    /* Modal */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.5);display:none;align-items:center;justify-content:center;z-index:90}
+    .modal{width:min(920px,96%);background:#fff;border-radius:12px;padding:18px}
+    .modal h3{margin-top:0}
+
+    /* charts container */
+    .charts{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+    @media(max-width:980px){.wrap{padding:12px}; .charts{grid-template-columns:1fr}; .grid-2{grid-template-columns:1fr}}
+
+    /* footer small */
+    .footer-note{text-align:center;color:var(--muted);font-size:13px;padding:8px}
+    /* small helpers */
+    .muted{color:var(--muted)} .flex{display:flex;align-items:center;gap:8px}
+
+    .logo-img {
+        width: 60px;   /* largeur du logo */
+        height: auto;  /* conserve le ratio */
+        object-fit: contain;
+        display: block;
+        border-radius: 30%;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="wrap">
+
+    <!-- HEADER -->
+    <header class="admin-header">
+      <div class="brand">
+        <div class="logo" aria-label="logo">
+          <img src="image/logo_1.jpeg" alt="Logo NANA RAFF" class="logo-img">
+        </div>
+        <div>
+          <h1>NANA RAFF — Admin</h1>
+          <div style="font-size:12px;color:var(--muted)">Tableau de bord • Gestion complète</div>
+        </div>
+      </div>
+
+      <div class="flex">
+        <div class="search" title="Recherche rapide">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 21l-4.35-4.35" stroke="#2c3e50" stroke-width="2" stroke-linecap="round"/><circle cx="11" cy="11" r="6" stroke="#2c3e50" stroke-width="2" /></svg>
+          <input id="globalSearch" placeholder="Recherche (commandes, clients, produits)..." style="border:0;outline:none;width:320px">
+        </div>
+
+        <button class="btn" id="newPostBtn" style="margin-left:12px">Nouvelle publication</button>
+        <button class="btn ghost" id="exportOrdersBtn" style="margin-left:8px">Exporter commandes</button>
+      </div>
+    </header>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-section">Navigation</div>
+      <div class="nav-item active" data-panel="dashboard">Dashboard</div>
+      <div class="nav-item" data-panel="orders">Commandes</div>
+      <div class="nav-item" data-panel="posts">Publications</div>
+      <div class="nav-item" data-panel="users">Utilisateurs</div>
+      <div class="nav-item" data-panel="products">Produits</div>
+      <div class="nav-item" data-panel="settings">Paramètres</div>
+
+      <div class="sidebar-section">Raccourcis</div>
+      <div class="nav-item" id="quick-promo">Créer promo</div>
+      <div class="nav-item" id="quick-notif">Envoyer notif</div>
+
+      <div style="height:22px"></div>
+      <div class="sidebar-section">Statut</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <div style="width:10px;height:10px;background:#34d399;border-radius:999px"></div>
+        <div style="font-weight:700">En ligne</div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="content" id="mainContent">
+
+      <!-- DASHBOARD PANEL -->
+      <section class="card" id="panel-dashboard">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div class="muted">Vue d'ensemble</div>
+            <h2 style="margin:6px 0 0">Performance & Résumé</h2>
+          </div>
+
+          <div class="flex">
+            <select id="dateRange" style="padding:8px;border-radius:8px;border:1px solid rgba(44,62,80,0.06)">
+              <option value="6">Derniers 6 mois</option>
+              <option value="12" selected>Derniers 12 mois</option>
+            </select>
+            <div style="width:14px"></div>
+            <div class="controls">
+              <div style="text-align:right;margin-right:10px">
+                <div class="muted">CA estimé</div>
+                <div class="num" id="kpi-revenue">€0</div>
+              </div>
+              <div style="text-align:right;margin-right:10px">
+                <div class="muted">Commandes</div>
+                <div class="num" id="kpi-orders">0</div>
+              </div>
+              <div style="text-align:right">
+                <div class="muted">Clients</div>
+                <div class="num" id="kpi-clients">0</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="height:14px"></div>
+
+        <div class="charts card" style="padding:12px;">
+          <div class="card" style="padding:12px;">
+            <canvas id="salesChart" height="180"></canvas>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <div class="card" style="padding:12px">
+              <canvas id="categoryChart" height="120"></canvas>
+            </div>
+            <div class="card" style="padding:12px;display:flex;flex-direction:column;gap:12px">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div class="muted">Top produits</div>
+                <div class="muted">Ventes</div>
+              </div>
+              <canvas id="topProductsChart" height="120"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ORDERS PANEL -->
+      <section class="card" id="panel-orders" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div class="muted">Commandes</div>
+            <h2 style="margin:6px 0 0">Toutes les commandes</h2>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <select id="filterStatus" style="padding:8px;border-radius:8px;border:1px solid rgba(44,62,80,0.06)">
+              <option value="all">Tous</option>
+              <option value="pending">En attente</option>
+              <option value="processing">En traitement</option>
+              <option value="shipped">Expédiée</option>
+              <option value="cancelled">Annulée</option>
+            </select>
+            <input id="ordersSearch" placeholder="Recherche commande / client / produit" style="padding:8px;border-radius:8px;border:1px solid rgba(44,62,80,0.06)">
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div style="overflow:auto">
+          <table class="table" id="ordersTable">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Client</th>
+                <th>Produits</th>
+                <th>Total</th>
+                <th>Date</th>
+                <th>Statut</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+
+        <div style="height:12px"></div>
+        <div style="display:flex;justify-content:flex-end;gap:8px">
+          <button class="btn ghost" id="bulkShipBtn">Marquer expédiée (sélection)</button>
+          <button class="btn" id="createOrderBtn">Nouvelle commande</button>
+        </div>
+      </section>
+
+      <!-- POSTS PANEL -->
+      <section class="card" id="panel-posts" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div class="muted">Publications</div>
+            <h2 style="margin:6px 0 0">Gestion des publications</h2>
+          </div>
+          <div style="display:flex;gap:8px">
+            <input id="postSearch" placeholder="Rechercher publication..." style="padding:8px;border-radius:8px;border:1px solid rgba(44,62,80,0.06)">
+            <button class="btn" id="newPostBtnTop">Nouvelle publication</button>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div id="postsList" style="display:flex;flex-direction:column;gap:12px;max-height:520px;overflow:auto;padding-right:6px"></div>
+      </section>
+
+      <!-- USERS PANEL -->
+      <section class="card" id="panel-users" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div class="muted">Utilisateurs</div>
+            <h2 style="margin:6px 0 0">Gestion des utilisateurs</h2>
+          </div>
+          <div style="display:flex;gap:8px">
+            <input id="userSearch" placeholder="Recherche utilisateur..." style="padding:8px;border-radius:8px;border:1px solid rgba(44,62,80,0.06)">
+            <button class="btn" id="inviteUserBtn">Inviter</button>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+        <div style="overflow:auto;max-height:520px">
+          <div id="usersList"></div>
+        </div>
+      </section>
+
+      <!-- PRODUCTS PANEL -->
+      <section class="card" id="panel-products" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>
+            <div class="muted">Produits</div>
+            <h2 style="margin:6px 0 0">Catalogue & Stocks</h2>
+          </div>
+          <div style="display:flex;gap:8px">
+            <input id="productSearch" placeholder="Recherche produit..." style="padding:8px;border-radius:8px;border:1px solid rgba(44,62,80,0.06)">
+            <button class="btn" id="addProductBtn">Ajouter produit</button>
+          </div>
+        </div>
+
+        <div style="height:12px"></div>
+        <div style="overflow:auto;max-height:520px">
+          <table class="table" id="productTable">
+            <thead><tr><th>Produit</th><th>Catégorie</th><th>Prix</th><th>Stock</th><th></th></tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SETTINGS PANEL -->
+      <section class="card" id="panel-settings" style="display:none;">
+        <div>
+          <div class="muted">Paramètres</div>
+          <h2>Configuration du site</h2>
+        </div>
+
+        <div style="height:12px"></div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div class="card">
+            <h3>Infos du site</h3>
+            <label>Nom du site</label>
+            <input id="siteName" placeholder="NANA RAFF" style="padding:8px;border-radius:8px;border:1px solid rgba(44,62,80,0.06)">
+            <label style="margin-top:8px">Monnaie</label>
+            <input id="currency" placeholder="EUR" style="padding:8px;border-radius:8px;border:1px solid rgba(44,62,80,0.06)">
+            <div style="height:10px"></div>
+            <button class="btn" id="saveSettings">Enregistrer</button>
+          </div>
+
+          <div class="card">
+            <h3>Maintenance</h3>
+            <label>Mode maintenance</label>
+            <select id="maintenanceMode" style="padding:8px;border-radius:8px;border:1px solid rgba(44,62,80,0.06)">
+              <option value="off">Désactivé</option>
+              <option value="on">Activé</option>
+            </select>
+            <div style="height:6px"></div>
+            <label>Message public</label>
+            <textarea id="maintenanceMsg" style="padding:8px;border-radius:8px;border:1px solid rgba(44,62,80,0.06);height:120px"></textarea>
+            <div style="height:10px"></div>
+            <button class="btn ghost" id="applyMaintenance">Appliquer</button>
+          </div>
+        </div>
+      </section>
+
+      <div class="footer-note">Panneau d'administration NANA RAFF — prototype front-end. Pour version serveur : intégrer API & authentification.</div>
+    </main>
+  </div>
+
+  <!-- Modal backdrop -->
+  <div class="modal-backdrop" id="modalBackdrop">
+    <div class="modal" id="modalContent"></div>
+  </div>
+
+<script>
+/* ===========================================================
+   ADMIN DASHBOARD - Frontend standalone
+   - Données simulées en localStorage
+   - Sections: dashboard, orders, posts, users, products, settings
+   - Charts: Chart.js
+   - Export CSV, CRUD posts, likes/comments, order management
+   =========================================================== */
+
+/* ----------------------
+   Utilities
+   ---------------------- */
+const $ = sel => document.querySelector(sel);
+const $$ = sel => Array.from(document.querySelectorAll(sel));
+
+function uid(prefix='id'){ return prefix + '_' + Math.random().toString(36).slice(2,9); }
+
+function formatCurrency(v){
+  return (typeof v === 'number' ? v : parseFloat(v||0)).toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
+}
+
+function toast(msg, time=2400){
+  const el = document.createElement('div');
+  el.style.position='fixed';
+  el.style.right='20px';
+  el.style.bottom='20px';
+  el.style.background='var(--secondary-color)';
+  el.style.color='#fff';
+  el.style.padding='10px 14px';
+  el.style.borderRadius='8px';
+  el.style.boxShadow='0 10px 30px rgba(2,6,23,0.3)';
+  el.innerText = msg;
+  document.body.appendChild(el);
+  setTimeout(()=> el.style.opacity='0.0', time-300);
+  setTimeout(()=> el.remove(), time);
+}
+
+/* ----------------------
+   Dummy initial data seeding (only if not present)
+   ---------------------- */
+const STORAGE_KEYS = {
+  ORDERS:'nr_orders_v1',
+  PRODUCTS:'nr_products_v1',
+  POSTS:'nr_posts_v1',
+  USERS:'nr_users_v1',
+  SETTINGS:'nr_settings_v1'
+};
+
+function seedDataOnce(){
+  if(!localStorage.getItem(STORAGE_KEYS.PRODUCTS)){
+    const products = [
+      {id:uid('p'),title:"Sérum Hydratant Lumière",category:"Skincare",price:24.99,stock:120,img:"https://picsum.photos/seed/p1/400/280"},
+      {id:uid('p'),title:"Crème Nuit Régénérante",category:"Skincare",price:34.5,stock:60,img:"https://picsum.photos/seed/p2/400/280"},
+      {id:uid('p'),title:"Masque Purifiant Argile",category:"Skincare",price:12.99,stock:140,img:"https://picsum.photos/seed/p3/400/280"},
+      {id:uid('p'),title:"Shampooing Doux Daily",category:"Haircare",price:9.9,stock:220,img:"https://picsum.photos/seed/p4/400/280"},
+      {id:uid('p'),title:"Après-shampoing Nourrissant",category:"Haircare",price:11.99,stock:180,img:"https://picsum.photos/seed/p5/400/280"},
+      {id:uid('p'),title:"Oméga-3 Premium",category:"Supplements",price:19.5,stock:140,img:"https://picsum.photos/seed/p6/400/280"},
+      {id:uid('p'),title:"Diffuseur d'Huiles Essentielles",category:"Home",price:39.99,stock:38,img:"https://picsum.photos/seed/p7/400/280"},
+      {id:uid('p'),title:"Bougie Senteur Verveine",category:"Home",price:14.0,stock:112,img:"https://picsum.photos/seed/p8/400/280"},
+    ];
+    localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(products));
+  }
+
+  if(!localStorage.getItem(STORAGE_KEYS.USERS)){
+    const users = [
+      {id:uid('u'),name:"Amina T.",email:"amina@example.com",role:"client",joined:daysAgo(40)},
+      {id:uid('u'),name:"Paul M.",email:"paul@example.com",role:"client",joined:daysAgo(18)},
+      {id:uid('u'),name:"Admin",email:"admin@nana-raff.com",role:"admin",joined:daysAgo(200)},
+    ];
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+  }
+
+  if(!localStorage.getItem(STORAGE_KEYS.ORDERS)){
+    const products = loadProducts();
+    // Create 16 sample orders across months
+    const orders = [];
+    const statuses = ['pending','processing','shipped','cancelled'];
+    for(let i=0;i<24;i++){
+      const qty = Math.ceil(Math.random()*3);
+      const prod = products[Math.floor(Math.random()*products.length)];
+      const total = +(prod.price * qty).toFixed(2);
+      orders.push({
+        id: uid('o'),
+        client: (Math.random()>0.5) ? "Amina T." : "Paul M.",
+        items: [{productId:prod.id,productName:prod.title,qty,price:prod.price}],
+        total,
+        date: randomDateWithinMonths(12,i),
+        status: statuses[Math.floor(Math.random()*statuses.length)]
+      });
+    }
+    localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(orders));
+  }
+
+  if(!localStorage.getItem(STORAGE_KEYS.POSTS)){
+    const posts = [
+      {id:uid('post'),author:'Admin',title:'Lancement nouveau sérum',content:'Nous lançons notre sérum hydratant…',image:'https://picsum.photos/seed/post1/600/300',date:Date.now()-1000*60*60*24*7,likes:8,comments:[{id:uid('c'),author:'Amina',text:'Félicitations !',date:Date.now()-1000*60*60*24*6}]},
+      {id:uid('post'),author:'Admin',title:'Conseils pour l\'hiver',content:'Hydratation & protection…',image:'https://picsum.photos/seed/post2/600/300',date:Date.now()-1000*60*60*24*20,likes:5,comments:[]}
+    ];
+    localStorage.setItem(STORAGE_KEYS.POSTS, JSON.stringify(posts));
+  }
+
+  if(!localStorage.getItem(STORAGE_KEYS.SETTINGS)){
+    const settings = {siteName:'NANA RAFF',currency:'EUR',maintenance:false,maintenanceMsg:''};
+    localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(settings));
+  }
+}
+function daysAgo(n){ return Date.now()-n*24*60*60*1000; }
+function randomDateWithinMonths(months, idx){
+  // spread roughly across months
+  const now = new Date();
+  const m = now.getMonth() - Math.floor(Math.random()*months);
+  const d = new Date(now.getFullYear(), m, Math.ceil(Math.random()*28));
+  return d.getTime();
+}
+
+/* ----------------------
+   Data accessors
+   ---------------------- */
+function loadProducts(){ return JSON.parse(localStorage.getItem(STORAGE_KEYS.PRODUCTS) || '[]'); }
+function saveProducts(data){ localStorage.setItem(STORAGE_KEYS.PRODUCTS, JSON.stringify(data)); }
+function loadOrders(){ return JSON.parse(localStorage.getItem(STORAGE_KEYS.ORDERS) || '[]'); }
+function saveOrders(data){ localStorage.setItem(STORAGE_KEYS.ORDERS, JSON.stringify(data)); }
+function loadPosts(){ return JSON.parse(localStorage.getItem(STORAGE_KEYS.POSTS) || '[]'); }
+function savePosts(data){ localStorage.setItem(STORAGE_KEYS.POSTS, JSON.stringify(data)); }
+function loadUsers(){ return JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]'); }
+function saveUsers(data){ localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(data)); }
+function loadSettings(){ return JSON.parse(localStorage.getItem(STORAGE_KEYS.SETTINGS) || '{}'); }
+function saveSettings(s){ localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify(s)); }
+
+/* Seed */
+seedDataOnce();
+
+/* ----------------------
+   Routing / Panels
+   ---------------------- */
+const panels = {
+  dashboard: $('#panel-dashboard'),
+  orders: $('#panel-orders'),
+  posts: $('#panel-posts'),
+  users: $('#panel-users'),
+  products: $('#panel-products'),
+  settings: $('#panel-settings')
+};
+
+$$('.nav-item').forEach(n=>{
+  n.addEventListener('click', ()=>{
+    $$('.nav-item').forEach(x=>x.classList.remove('active'));
+    n.classList.add('active');
+    const panel = n.dataset.panel;
+    // hide all
+    Object.values(panels).forEach(p=>p.style.display='none');
+    panels[panel].style.display = 'block';
+  });
+});
+
+/* ----------------------
+   Dashboard: charts and KPIs
+   ---------------------- */
+let salesChart, categoryChart, topProductsChart;
+
+function computeKPI(){
+  const orders = loadOrders();
+  const revenue = orders.reduce((s,o)=>s + (Number(o.total)||0),0);
+  const clients = loadUsers().filter(u=>u.role==='client').length;
+  const totalOrders = orders.length;
+  $('#kpi-revenue').innerText = formatCurrency(revenue);
+  $('#kpi-orders').innerText = totalOrders;
+  $('#kpi-clients').innerText = clients;
+}
+
+/* Chart data builder */
+function buildSalesSeries(months=12){
+  // aggregate simulated by month (latest months)
+  const orders = loadOrders();
+  const now = new Date();
+  const labels = [];
+  const data = [];
+  for(let i=months-1;i>=0;i--){
+    const d = new Date(now.getFullYear(), now.getMonth()-i, 1);
+    labels.push(d.toLocaleString('fr-FR',{month:'short',year:'2-digit'}));
+    const start = new Date(d.getFullYear(), d.getMonth(), 1).getTime();
+    const end = new Date(d.getFullYear(), d.getMonth()+1, 1).getTime();
+    const sum = orders.filter(o=>o.date>=start && o.date<end).reduce((s,o)=>s + (Number(o.total)||0),0);
+    data.push(Math.round(sum*100)/100);
+  }
+  return {labels,data};
+}
+
+function buildCategoryBreakdown(){
+  const orders = loadOrders();
+  const prodMap = {};
+  const products = loadProducts();
+  products.forEach(p=>prodMap[p.id]=p);
+  const catTotals = {};
+  orders.forEach(o=>{
+    o.items.forEach(it=>{
+      const prod = prodMap[it.productId];
+      const cat = (prod && prod.category) || 'Autres';
+      catTotals[cat] = (catTotals[cat]||0) + it.qty * it.price;
+    });
+  });
+  const labels = Object.keys(catTotals);
+  const data = labels.map(l=>Math.round(catTotals[l]*100)/100);
+  return {labels,data};
+}
+
+function buildTopProducts(limit=5){
+  const orders = loadOrders();
+  const counter = {};
+  orders.forEach(o=>{
+    o.items.forEach(it=>{
+      counter[it.productName] = (counter[it.productName]||0)+it.qty;
+    });
+  });
+  const entries = Object.entries(counter).sort((a,b)=>b[1]-a[1]).slice(0,limit);
+  return {labels:entries.map(e=>e[0]),data:entries.map(e=>e[1])};
+}
+
+function renderCharts(){
+  const months = Number($('#dateRange').value) || 12;
+  const salesSeries = buildSalesSeries(months);
+  const cat = buildCategoryBreakdown();
+  const top = buildTopProducts(5);
+
+  // destroy existing charts
+  if(salesChart) salesChart.destroy();
+  if(categoryChart) categoryChart.destroy();
+  if(topProductsChart) topProductsChart.destroy();
+
+  const ctx1 = $('#salesChart').getContext('2d');
+  salesChart = new Chart(ctx1, {
+    type:'line',
+    data:{labels:salesSeries.labels,datasets:[{label:'CA',data:salesSeries.data,fill:true,backgroundColor:'rgba(39,174,96,0.12)',borderColor:'rgba(39,174,96,0.95)',tension:0.3}]},
+    options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}
+  });
+
+  const ctx2 = $('#categoryChart').getContext('2d');
+  categoryChart = new Chart(ctx2,{type:'doughnut',data:{labels:cat.labels,datasets:[{data:cat.data,backgroundColor:['#27ae60','#16a085','#2ecc71','#9ae6b4','#81e6d9']}]},options:{plugins:{legend:{position:'bottom'}}}});
+
+  const ctx3 = $('#topProductsChart').getContext('2d');
+  topProductsChart = new Chart(ctx3,{type:'bar',data:{labels:top.labels,datasets:[{label:'Quantité vendue',data:top.data,backgroundColor:'#27ae60'}]},options:{plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+}
+
+/* wire dateRange */
+$('#dateRange').addEventListener('change', ()=>renderCharts());
+
+/* ----------------------
+   ORDERS: render, filter, actions
+   ---------------------- */
+function renderOrdersTable(filterStatus='all',query=''){
+  const tbody = $('#ordersTable tbody');
+  const orders = loadOrders().slice().sort((a,b)=>b.date - a.date);
+  tbody.innerHTML = '';
+  const q = (query||'').toLowerCase();
+
+  orders.forEach((o,idx)=>{
+    if(filterStatus !== 'all' && o.status !== filterStatus) return;
+    if(q){
+      const hay = (o.client + ' ' + o.items.map(i=>i.productName).join(' ')).toLowerCase();
+      if(!hay.includes(q)) return;
+    }
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${idx+1}</td>
+      <td>${o.client}</td>
+      <td>${o.items.map(i=>`${i.productName} x${i.qty}`).join(', ')}</td>
+      <td>${formatCurrency(o.total)}</td>
+      <td>${new Date(o.date).toLocaleDateString()}</td>
+      <td><span class="status ${o.status}">${o.status}</span></td>
+      <td style="text-align:right">
+        <select data-id="${o.id}" class="status-select" style="padding:6px;border-radius:8px;border:1px solid rgba(44,62,80,0.06)">
+          <option value="pending">pending</option>
+          <option value="processing">processing</option>
+          <option value="shipped">shipped</option>
+          <option value="cancelled">cancelled</option>
+        </select>
+        <button class="btn ghost view-order" data-id="${o.id}" style="margin-left:8px">Voir</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+    // set default select value
+    tr.querySelector('.status-select').value = o.status;
+  });
+
+  // bind listeners
+  $$('.status-select').forEach(sel=>{
+    sel.addEventListener('change', e=>{
+      const id = sel.dataset.id;
+      const orders = loadOrders();
+      const o = orders.find(x=>x.id===id);
+      if(o){ o.status = sel.value; saveOrders(orders); toast('Statut modifié'); renderOrdersTable($('#filterStatus').value, $('#ordersSearch').value); computeKPI(); renderCharts(); }
+    });
+  });
+
+  $$('.view-order').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      const id = btn.dataset.id;
+      const order = loadOrders().find(x=>x.id===id);
+      showOrderModal(order);
+    });
+  });
+}
+
+$('#filterStatus').addEventListener('change', ()=> renderOrdersTable($('#filterStatus').value, $('#ordersSearch').value));
+$('#ordersSearch').addEventListener('input', ()=> renderOrdersTable($('#filterStatus').value, $('#ordersSearch').value));
+
+/* Create order */
+$('#createOrderBtn').addEventListener('click', ()=>{
+  const products = loadProducts();
+  openModal(`<h3>Nouvelle commande</h3>
+    <div style="display:flex;gap:8px">
+      <select id="newOrderProduct">${products.map(p=>`<option value="${p.id}">${p.title} — ${formatCurrency(p.price)}</option>`).join('')}</select>
+      <input id="newOrderQty" type="number" min="1" value="1" style="width:80px;padding:6px;border-radius:8px;border:1px solid rgba(44,62,80,0.06)">
+    </div>
+    <div style="height:8px"></div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button class="btn ghost" id="cancelNewOrder">Annuler</button>
+      <button class="btn" id="confirmNewOrder">Créer</button>
+    </div>
+  `, ()=> {
+    $('#cancelNewOrder').addEventListener('click', closeModal);
+    $('#confirmNewOrder').addEventListener('click', ()=>{
+      const pid = $('#newOrderProduct').value;
+      const qty = Number($('#newOrderQty').value) || 1;
+      const prod = loadProducts().find(p=>p.id===pid);
+      const orders = loadOrders();
+      const newO = {id:uid('o'),client:'Admin (manual)',items:[{productId:pid,productName:prod.title,qty,price:prod.price}],total: +(prod.price*qty).toFixed(2),date:Date.now(),status:'processing'};
+      orders.push(newO); saveOrders(orders); closeModal(); toast('Commande créée'); renderOrdersTable($('#filterStatus').value, $('#ordersSearch').value); computeKPI(); renderCharts();
+    });
+  });
+});
+
+/* View order modal */
+function showOrderModal(order){
+  if(!order) return;
+  openModal(`<h3>Commande #${order.id}</h3>
+    <div><strong>Client:</strong> ${order.client}</div>
+    <div><strong>Date:</strong> ${new Date(order.date).toLocaleString()}</div>
+    <div style="height:8px"></div>
+    <div><strong>Items:</strong>
+      <ul>${order.items.map(it=>`<li>${it.productName} x${it.qty} — ${formatCurrency(it.price)}</li>`).join('')}</ul>
+    </div>
+    <div><strong>Total:</strong> ${formatCurrency(order.total)}</div>
+    <div style="height:8px"></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px">
+      <button class="btn ghost" id="closeOrderModal">Fermer</button>
+    </div>
+  `, ()=>{
+    $('#closeOrderModal').addEventListener('click', closeModal);
+  });
+}
+
+/* Bulk ship (example) */
+$('#bulkShipBtn').addEventListener('click', ()=>{
+  // For demo, mark all pending -> shipped
+  const orders = loadOrders();
+  let changed=0;
+  orders.forEach(o=>{ if(o.status==='pending'){ o.status='shipped'; changed++; }});
+  saveOrders(orders);
+  toast(`${changed} commandes mises à jour`);
+  renderOrdersTable($('#filterStatus').value, $('#ordersSearch').value); renderCharts(); computeKPI();
+});
+
+/* Export orders CSV */
+$('#exportOrdersBtn').addEventListener('click', ()=>{
+  const orders = loadOrders();
+  let csv = 'id,client,date,total,status,items\\n';
+  orders.forEach(o=>{
+    const items = o.items.map(i=>`${i.productName} x${i.qty}`).join('|');
+    csv += `${o.id},"${o.client}",${new Date(o.date).toISOString()},${o.total},${o.status},"${items}"\\n`;
+  });
+  const blob = new Blob([csv], {type:'text/csv; charset=utf-8;'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'nana-raff-orders.csv'; document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+});
+
+/* ----------------------
+   POSTS: CRUD, likes, comments
+   ---------------------- */
+function renderPosts(filter=''){
+  const list = $('#postsList');
+  const posts = loadPosts().slice().sort((a,b)=>b.date - a.date);
+  list.innerHTML = '';
+  const q = (filter||'').toLowerCase();
+  posts.forEach(p=>{
+    if(q && !(p.title+p.content).toLowerCase().includes(q)) return;
+    const el = document.createElement('div');
+    el.className = 'post';
+    el.innerHTML = `
+      <img src="${p.image}" style="width:120px;height:80px;object-fit:cover;border-radius:8px">
+      <div style="flex:1;display:flex;flex-direction:column">
+        <div style="display:flex;align-items:center;">
+          <strong style="font-size:15px">${p.title}</strong>
+          <div style="margin-left:8px" class="muted">par ${p.author} • ${new Date(p.date).toLocaleDateString()}</div>
+          <div class="actions" style="display:flex;align-items:center;margin-left:auto">
+            <button class="btn ghost" data-id="${p.id}" data-action="edit">Edit</button>
+            <button class="btn" data-id="${p.id}" data-action="delete" style="margin-left:8px">Supprimer</button>
+          </div>
+        </div>
+        <div style="margin-top:8px;color:#334155">${p.content}</div>
+        <div style="margin-top:auto;display:flex;gap:8px;align-items:center;margin-top:8px">
+          <div class="muted">❤ ${p.likes||0}</div>
+          <div class="muted">💬 ${p.comments ? p.comments.length : 0}</div>
+        </div>
+      </div>
+    `;
+    list.appendChild(el);
+
+    // actions
+    el.querySelectorAll('button').forEach(btn=>{
+      btn.addEventListener('click', ()=> {
+        const action = btn.dataset.action;
+        const id = btn.dataset.id;
+        if(action === 'delete'){ if(confirm('Supprimer la publication ?')){ deletePost(id); } }
+        if(action === 'edit'){ openPostEditor(id); }
+      });
+    });
+  });
+}
+
+function deletePost(id){
+  const posts = loadPosts().filter(p=>p.id!==id);
+  savePosts(posts);
+  renderPosts($('#postSearch').value);
+  toast('Publication supprimée');
+}
+
+function openPostEditor(id=null){
+  const editing = id ? loadPosts().find(p=>p.id===id) : null;
+  openModal(`<h3>${editing ? 'Modifier publication':'Nouvelle publication'}</h3>
+    <label>Titre</label><input id="postTitle" value="${editing ? escapeHtml(editing.title):''}" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(44,62,80,0.06)">
+    <label>Image URL</label><input id="postImage" value="${editing ? escapeHtml(editing.image):''}" style="width:100%;padding:8px;border-radius:8px;border:1px solid rgba(44,62,80,0.06)">
+    <label>Contenu</label><textarea id="postContent" style="width:100%;height:140px;padding:8px;border-radius:8px;border:1px solid rgba(44,62,80,0.06)">${editing ? escapeHtml(editing.content):''}</textarea>
+    <div style="height:8px"></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px">
+      <button class="btn ghost" id="cancelPost">Annuler</button>
+      <button class="btn" id="savePost">Enregistrer</button>
+    </div>
+  `, ()=>{
+    $('#cancelPost').addEventListener('click', closeModal);
+    $('#savePost').addEventListener('click', ()=>{
+      const title = $('#postTitle').value.trim();
+      const image = $('#postImage').value.trim() || 'https://picsum.photos/seed/postfallback/600/300';
+      const content = $('#postContent').value.trim();
+      if(!title || !content){ alert('Titre et contenu requis'); return; }
+      const posts = loadPosts();
+      if(editing){
+        editing.title = title; editing.image=image; editing.content=content; editing.date=Date.now();
+      } else {
+        posts.push({id:uid('post'),author:'Admin',title,content,image,date:Date.now(),likes:0,comments:[]});
+      }
+      savePosts(posts);
+      closeModal();
+      renderPosts();
+      toast('Publication enregistrée');
+    });
+  });
+}
+
+/* escape helper for textarea default values (basic) */
+function escapeHtml(s){ return (s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+$('#newPostBtn').addEventListener('click', ()=>openPostEditor());
+$('#newPostBtnTop').addEventListener('click', ()=>openPostEditor());
+$('#postSearch').addEventListener('input', ()=>renderPosts($('#postSearch').value));
+
+/* ----------------------
+   USERS rendering & invite
+   ---------------------- */
+function renderUsers(filter=''){
+  const list = $('#usersList'); list.innerHTML='';
+  const users = loadUsers();
+  const q = (filter||'').toLowerCase();
+  users.forEach(u=>{
+    if(q && !(u.name+u.email).toLowerCase().includes(q)) return;
+    const el = document.createElement('div');
+    el.className='user-row';
+    el.innerHTML = `<div class="avatar">${u.name.split(' ').map(s=>s[0].toUpperCase()).slice(0,2).join('')}</div>
+      <div style="flex:1">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div><strong>${u.name}</strong> <div class="muted">${u.email}</div></div>
+          <div style="text-align:right">
+            <div class="muted">role</div>
+            <select data-id="${u.id}" class="roleSelect" style="padding:6px;border-radius:8px;border:1px solid rgba(44,62,80,0.06)">
+              <option value="client">client</option>
+              <option value="manager">manager</option>
+              <option value="admin">admin</option>
+            </select>
+          </div>
+        </div>
+      </div>`;
+    list.appendChild(el);
+    el.querySelector('.roleSelect').value = u.role;
+  });
+
+  $$('.roleSelect').forEach(sel=>{
+    sel.addEventListener('change', ()=>{
+      const id = sel.dataset.id; const users = loadUsers(); const u = users.find(x=>x.id===id);
+      u.role = sel.value; saveUsers(users); toast('Rôle mis à jour');
+    });
+  });
+}
+
+$('#userSearch').addEventListener('input', ()=>renderUsers($('#userSearch').value));
+$('#inviteUserBtn').addEventListener('click', ()=>{
+  openModal(`<h3>Inviter un utilisateur</h3>
+    <label>Nom</label><input id="inviteName" style="padding:8px;border:1px solid rgba(44,62,80,0.06)">
+    <label>Email</label><input id="inviteEmail" style="padding:8px;border:1px solid rgba(44,62,80,0.06)">
+    <div style="height:8px"></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px">
+      <button class="btn ghost" id="cancelInvite">Annuler</button>
+      <button class="btn" id="sendInvite">Envoyer</button>
+    </div>`, ()=>{
+      $('#cancelInvite').addEventListener('click', closeModal);
+      $('#sendInvite').addEventListener('click', ()=>{
+        const name = $('#inviteName').value.trim(), email = $('#inviteEmail').value.trim();
+        if(!name||!email){ alert('Remplir les champs'); return; }
+        const users = loadUsers(); users.push({id:uid('u'),name, email, role:'client',joined:Date.now()}); saveUsers(users); renderUsers(); closeModal(); toast('Invitation envoyée (simulée)');
+      });
+    });
+});
+
+/* ----------------------
+   PRODUCTS list & CRUD
+   ---------------------- */
+function renderProductsList(filter=''){
+  const tbody = $('#productTable tbody'); tbody.innerHTML='';
+  const products = loadProducts();
+  const q = (filter||'').toLowerCase();
+  products.forEach(p=>{
+    if(q && !(p.title+p.category).toLowerCase().includes(q)) return;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td style="display:flex;gap:8px;align-items:center">
+        <img src="${p.img}" style="width:52px;height:40px;object-fit:cover;border-radius:8px">
+        <div><strong>${p.title}</strong><div class="muted" style="font-size:12px">${p.category}</div></div>
+      </td>
+      <td>${p.category}</td>
+      <td>${formatCurrency(p.price)}</td>
+      <td>${p.stock}</td>
+      <td style="text-align:right">
+        <button class="btn ghost editProduct" data-id="${p.id}">Edit</button>
+        <button class="btn" style="margin-left:8px" data-id="${p.id}" id="del-${p.id}">Suppr</button>
+      </td>`;
+    tbody.appendChild(tr);
+  });
+
+  $$('.editProduct').forEach(btn=>btn.addEventListener('click', ()=> openProductEditor(btn.dataset.id)));
+  $$('#productTable tbody').querySelectorAll('button[id^="del-"]').forEach(b=>{
+    b.addEventListener('click', ()=> {
+      const id = b.id.replace('del-','');
+      if(confirm('Supprimer produit ?')){ const products=loadProducts().filter(p=>p.id!==id); saveProducts(products); renderProductsList($('#productSearch').value); toast('Produit supprimé'); }
+    });
+  });
+}
+$('#addProductBtn').addEventListener('click', ()=> openProductEditor());
+
+function openProductEditor(id=null){
+  const editing = id ? loadProducts().find(p=>p.id===id) : null;
+  openModal(`<h3>${editing ? 'Modifier produit' : 'Nouveau produit'}</h3>
+    <label>Titre</label><input id="prodTitle" value="${editing ? escapeHtml(editing.title):''}" style="width:100%;padding:8px;border:1px solid rgba(44,62,80,0.06)">
+    <label>Catégorie</label><input id="prodCategory" value="${editing ? escapeHtml(editing.category):''}" style="width:100%;padding:8px;border:1px solid rgba(44,62,80,0.06)">
+    <label>Prix</label><input id="prodPrice" type="number" value="${editing ? editing.price : ''}" style="width:100%;padding:8px;border:1px solid rgba(44,62,80,0.06)">
+    <label>Stock</label><input id="prodStock" type="number" value="${editing ? editing.stock : 0}" style="width:100%;padding:8px;border:1px solid rgba(44,62,80,0.06)">
+    <label>Image URL</label><input id="prodImg" value="${editing ? escapeHtml(editing.img):''}" style="width:100%;padding:8px;border:1px solid rgba(44,62,80,0.06)">
+    <div style="height:8px"></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px">
+      <button class="btn ghost" id="cancelProd">Annuler</button>
+      <button class="btn" id="saveProd">Enregistrer</button>
+    </div>`, ()=>{
+      $('#cancelProd').addEventListener('click', closeModal);
+      $('#saveProd').addEventListener('click', ()=>{
+        const title = $('#prodTitle').value.trim();
+        const category = $('#prodCategory').value.trim();
+        const price = Number($('#prodPrice').value)||0;
+        const stock = Number($('#prodStock').value)||0;
+        const img = $('#prodImg').value.trim() || 'https://picsum.photos/seed/prodfallback/400/280';
+        if(!title||!category){ alert('Titre et catégorie requis'); return; }
+        const products = loadProducts();
+        if(editing){
+          editing.title = title; editing.category = category; editing.price = price; editing.stock = stock; editing.img = img;
+        } else {
+          products.push({id:uid('p'),title,category,price,stock,img});
+        }
+        saveProducts(products); closeModal();
+        renderProductsList($('#productSearch').value); renderCharts(); toast('Produit sauvegardé');
+      });
+    });
+}
+
+/* ----------------------
+   SETTINGS
+   ---------------------- */
+$('#saveSettings').addEventListener('click', ()=>{
+  const s = loadSettings();
+  s.siteName = $('#siteName').value || s.siteName;
+  s.currency = $('#currency').value || s.currency;
+  saveSettings(s);
+  toast('Paramètres sauvegardés');
+});
+
+$('#applyMaintenance').addEventListener('click', ()=>{
+  const s = loadSettings();
+  s.maintenance = $('#maintenanceMode').value === 'on';
+  s.maintenanceMsg = $('#maintenanceMsg').value;
+  saveSettings(s); toast('Mode maintenance appliqué');
+});
+
+/* ----------------------
+   Modal helpers
+   ---------------------- */
+function openModal(html, onReady){
+  const mb = $('#modalBackdrop'), mc = $('#modalContent');
+  mc.innerHTML = html;
+  mb.style.display = 'flex';
+  setTimeout(()=> mb.style.opacity = '1', 10);
+  if(onReady) onReady();
+}
+function closeModal(){ const mb = $('#modalBackdrop'); mb.style.opacity = '0'; setTimeout(()=> mb.style.display='none',200); }
+
+/* close when clicked outside */
+$('#modalBackdrop').addEventListener('click', (e)=> { if(e.target === $('#modalBackdrop')) closeModal(); });
+
+/* ----------------------
+   Small helpers to initialize UI data
+   ---------------------- */
+function initUI(){
+  // initial render
+  computeKPI();
+  renderCharts();
+  renderOrdersTable('all','');
+  renderPosts();
+  renderUsers();
+  renderProductsList();
+  // fill settings fields
+  const s = loadSettings();
+  $('#siteName').value = s.siteName || 'NANA RAFF';
+  $('#currency').value = s.currency || 'EUR';
+  $('#maintenanceMode').value = s.maintenance ? 'on':'off';
+  $('#maintenanceMsg').value = s.maintenanceMsg || '';
+}
+
+/* ----------------------
+   Search global
+   ---------------------- */
+$('#globalSearch').addEventListener('input', e=>{
+  const q = e.target.value.trim();
+  // quick search: if contains "cmd" go to orders, if "user" go to users, else search across orders/ products
+  if(q.length < 2){ return; }
+  if(q.match(/order|cmd|commande|#\d+/i)){ document.querySelector('[data-panel="orders"]').click(); $('#ordersSearch').value = q; renderOrdersTable($('#filterStatus').value, q); return; }
+  // otherwise search posts & products
+  document.querySelector('[data-panel="posts"]').click(); $('#postSearch').value = q; renderPosts(q);
+});
+
+/* ----------------------
+   Utility UI bindings
+   ---------------------- */
+$('#newPostBtn').addEventListener('click', ()=> openPostEditor());
+$('#newPostBtnTop').addEventListener('click', ()=> openPostEditor());
+$('#createOrderBtn').addEventListener('click', ()=> {/* handled above */});
+$('#quick-promo').addEventListener('click', ()=> {
+  openModal(`<h3>Créer promotion</h3>
+    <label>Message promo</label><input id="promoText" style="width:100%;padding:8px;border:1px solid rgba(44,62,80,0.06)">
+    <label>Réduction (%)</label><input id="promoPct" type="number" style="width:100%;padding:8px;border:1px solid rgba(44,62,80,0.06)">
+    <div style="height:8px"></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn ghost" id="cancelPromo">Annuler</button><button class="btn" id="applyPromo">Appliquer</button></div>
+  `, ()=>{
+    $('#cancelPromo').addEventListener('click', closeModal);
+    $('#applyPromo').addEventListener('click', ()=>{
+      const txt = $('#promoText').value; const pct = Number($('#promoPct').value)||0;
+      closeModal(); toast(`Promo ${pct}% publiée: ${txt}`);
+    });
+  });
+});
+$('#quick-notif').addEventListener('click', ()=> {
+  openModal(`<h3>Envoyer notification</h3>
+    <label>Message</label><input id="notifText" style="width:100%;padding:8px;border:1px solid rgba(44,62,80,0.06)">
+    <div style="height:8px"></div>
+    <div style="display:flex;justify-content:flex-end;gap:8px"><button class="btn ghost" id="cancelNotif">Annuler</button><button class="btn" id="sendNotif">Envoyer</button></div>
+  `, ()=>{
+    $('#cancelNotif').addEventListener('click', closeModal);
+    $('#sendNotif').addEventListener('click', ()=>{
+      closeModal(); toast('Notification envoyée (simulée)');
+    });
+  });
+});
+
+/* ----------------------
+   Helpers: load initial & wire events
+   ---------------------- */
+initUI();
+
+/* refresh charts every minute to simulate live */
+setInterval(()=>{ computeKPI(); renderCharts(); }, 60*1000);
+
+/* keyboard shortcut: N = new post */
+document.addEventListener('keydown', e=>{ if(e.key.toLowerCase()==='n'){ openPostEditor(); } });
+
+/* small util to ensure render functions exist */
+function ensureDOMReady(){
+  // initial render done
+}
+
+
+function ajouterProduit(nom, categorie, prix, image, description) {
+  let produits = JSON.parse(localStorage.getItem("produits"));
+  let nouveau = {
+    id: Date.now(),
+    nom,
+    categorie,
+    prix,
+    image,
+    description
+  };
+  produits.push(nouveau);
+  localStorage.setItem("produits", JSON.stringify(produits));
+  alert("Produit ajouté avec succès !");
+}
+
+
+function chargerCommandes() {
+  let commandes = JSON.parse(localStorage.getItem("commandes")) || [];
+  let table = document.getElementById("listeCommandes");
+  table.innerHTML = "";
+
+  commandes.forEach(c => {
+    let row = document.createElement("tr");
+    row.innerHTML = `
+      <td>${c.id}</td>
+      <td>${c.produit}</td>
+      <td>${c.prix} FCFA</td>
+      <td>${c.date}</td>`;
+    table.appendChild(row);
+  });
+}
+document.addEventListener("DOMContentLoaded", chargerCommandes);
+
+
+function ajouterPromo(titre, details) {
+  let promos = JSON.parse(localStorage.getItem("promotions"));
+  promos.push({id: Date.now(), titre, details});
+  localStorage.setItem("promotions", JSON.stringify(promos));
+}
+
+
+/* End of script */
+</script>
+</body>
+</html>

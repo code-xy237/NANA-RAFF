@@ -1,0 +1,811 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>NANA RAFF — Immobilier & Produits Immobiliers</title>
+
+  <!-- ===========================
+       Styles (palette NANA RAFF)
+       =========================== -->
+  <style>
+    :root {
+      --primary-color:   #27ae60;   /* vert principal */
+      --secondary-color: #2c3e50;   /* bleu/gris très sombre */
+      --background-color:#ecf0f1;   /* gris très clair */
+      --text-color:      #2c3e50;   /* texte */
+      --muted:           #7f8c8d;
+      --card:            #ffffff;
+      --glass: rgba(255,255,255,0.6);
+      --shadow: 0 12px 30px rgba(44,62,80,0.08);
+    }
+
+    /* Reset & base */
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;background:var(--background-color);color:var(--text-color);-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none}
+    img{max-width:100%;display:block}
+
+    /* Header */
+    header{
+      background: linear-gradient(90deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
+      backdrop-filter: blur(6px);
+      position:sticky; top:0; z-index:40; box-shadow:0 6px 18px rgba(44,62,80,0.06)
+    }
+    .nav {
+      max-width:1200px;margin:0 auto;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px;
+    }
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo {
+      width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,var(--primary-color),#16a085);
+      display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:18px;box-shadow:0 6px 20px rgba(39,174,96,0.16)
+    }
+    nav ul{display:flex;gap:12px;align-items:center;list-style:none;margin:0}
+    nav li{padding:8px 12px;border-radius:8px;color:var(--muted);font-weight:700}
+    nav li:hover{background:rgba(44,62,80,0.04);color:var(--secondary-color)}
+    .actions{display:flex;gap:8px;align-items:center}
+
+    /* Hero */
+    .hero {
+      position:relative; height:320px; display:flex;align-items:center;justify-content:center; text-align:center;
+      background-image: url('https://images.unsplash.com/photo-1501973801540-537f08ccae7b?auto=format&fit=crop&w=1600&q=80');
+      background-size:cover;background-position:center;
+      margin-bottom:22px;
+    }
+    .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(44,62,80,0.45),rgba(39,174,96,0.06))}
+    .hero-inner{position:relative;z-index:2;color:white;padding:18px;max-width:1000px;animation:slideUp .9s ease both}
+    .hero-inner h1{font-size:32px;margin-bottom:6px}
+    .hero-inner p{opacity:0.95;color:rgba(255,255,255,0.95)}
+
+    @keyframes slideUp{from{transform:translateY(12px);opacity:0}to{transform:none;opacity:1}}
+
+    /* Page layout */
+    .container{max-width:1200px;margin:0 auto;padding:18px}
+    .layout {display:grid;grid-template-columns:320px 1fr;gap:18px}
+    @media(max-width:980px){.layout{grid-template-columns:1fr;padding:0 12px}}
+
+    /* Sidebar filters */
+    .sidebar{background:var(--card);padding:16px;border-radius:12px;box-shadow:var(--shadow);position:sticky;top:20px;height:fit-content}
+    .filter-group{margin-bottom:14px}
+    .filter-group label{display:block;font-weight:800;color:var(--secondary-color);margin-bottom:8px}
+    .chip{display:inline-block;padding:6px 10px;border-radius:999px;background:rgba(44,62,80,0.06);font-weight:700;color:var(--muted);margin:4px 6px 0 0}
+    .range{display:flex;gap:8px;align-items:center}
+    input[type="range"]{width:100%}
+
+    /* Listings */
+    .results {display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px}
+    .card {
+      background:var(--card);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);
+      display:flex;flex-direction:column;transition:transform .22s ease,box-shadow .22s ease;
+    }
+    .card:hover{transform:translateY(-8px);box-shadow:0 22px 60px rgba(44,62,80,0.12)}
+    .media{height:200px;overflow:hidden}
+    .media img{width:100%;height:100%;object-fit:cover;display:block}
+    .body{padding:12px;display:flex;flex-direction:column;gap:8px;flex:1}
+    .title-row{display:flex;align-items:center;gap:10px}
+    .title-row h3{margin:0;font-size:16px;color:var(--secondary-color)}
+    .meta{color:var(--muted);font-size:13px}
+    .price{font-weight:900;color:var(--primary-color);font-size:18px}
+    .card .actions{display:flex;gap:8px;margin-top:auto;align-items:center}
+
+    /* Favorite (heart) */
+    .fav{background:transparent;border:0;cursor:pointer;font-size:20px;color:var(--muted)}
+    .fav.active{color:var(--primary-color)}
+
+    /* Card tags */
+    .tags{display:flex;flex-wrap:wrap;gap:8px;font-size:13px}
+    .tag{padding:6px 8px;border-radius:8px;background:rgba(39,174,96,0.08);color:var(--primary-color);font-weight:800}
+
+    /* Modal product detail */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(2,6,23,0.55);display:none;align-items:center;justify-content:center;z-index:90}
+    .modal-backdrop.show{display:flex}
+    .modal{background:var(--card);width:min(980px,96%);max-height:90vh;overflow:auto;border-radius:12px;padding:18px;box-shadow:var(--shadow)}
+    .modal .carousel{display:flex;gap:8px;align-items:center}
+    .carousel-main{flex:1;height:380px;overflow:hidden;border-radius:8px}
+    .carousel-thumbs{display:flex;gap:8px;margin-top:10px}
+    .thumb{width:80px;height:60px;object-fit:cover;border-radius:6px;cursor:pointer;opacity:0.8;border:2px solid transparent}
+    .thumb.active{opacity:1;border-color:var(--primary-color)}
+    .modal h3{margin-top:0}
+    .close{position:absolute;right:16px;top:12px;border:0;background:transparent;font-size:22px;cursor:pointer;color:var(--muted)}
+
+    /* Mortgage calc */
+    .calc {display:flex;flex-direction:column;gap:8px;padding:12px;background:linear-gradient(180deg,rgba(39,174,96,0.04),rgba(39,174,96,0.02));border-radius:8px}
+    .calc-row{display:flex;gap:8px;align-items:center}
+
+    /* Map */
+    .map {height:300px;border-radius:12px;overflow:hidden;border:1px solid rgba(44,62,80,0.06)}
+
+    /* Footer */
+    footer{margin-top:22px;padding:20px;text-align:center;color:var(--muted)}
+
+    /* Toasts */
+    .toast {position:fixed;right:20px;bottom:20px;background:var(--secondary-color);color:white;padding:10px 14px;border-radius:8px;box-shadow:0 10px 30px rgba(2,6,23,0.3);z-index:999}
+
+    /* Responsive */
+    @media(max-width:720px){
+      .carousel-main{height:220px}
+      .modal{padding:12px}
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= HEADER ================= -->
+  <header>
+    <div class="nav">
+      <div class="brand">
+        <div class="logo">NR</div>
+        <div>
+          <div style="font-weight:800">NANA RAFF</div>
+          <div style="font-size:12px;color:var(--muted)">Immobilier & Produits liés</div>
+        </div>
+      </div>
+
+      <nav>
+        <ul>
+          <a href="index.html"><li>Accueil</li></a>
+          <a href="produits.html"><li>Produits</li></a>
+          <a href="immobilier.html"><li style="background:rgba(39,174,96,0.08);color:var(--primary-color);border-radius:8px">Immobilier</li></a>
+          <a href="contact.html"><li>Contact</li></a>
+        </ul>
+      </nav>
+
+      <div class="actions">
+        <input id="searchInput" placeholder="Rechercher (ville, titre, prix...)" style="padding:8px;border-radius:10px;border:1px solid rgba(44,62,80,0.06);outline:none;width:220px">
+        <button class="fav" id="viewFavs" title="Voir favoris">★</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= HERO ================= -->
+  <section class="hero" role="img" aria-label="Immobilier NANA RAFF">
+    <div class="hero-inner">
+      <h1>Investissez & Achetez — Biens Sélectionnés</h1>
+      <p>Parcourez notre sélection de biens immobiliers et produits immobiliers (lots, locaux, terrains, investissements). Gestion de contact, simulation de prêt et suivi simplifié.</p>
+    </div>
+  </section>
+
+  <!-- ================= MAIN LAYOUT ================= -->
+  <main class="container">
+    <div class="layout">
+      <!-- SIDEBAR FILTERS -->
+      <aside class="sidebar" aria-label="Filtres de recherche">
+        <div class="filter-group">
+          <label>Type de bien</label>
+          <div>
+            <button class="chip" data-type="all">Tous</button>
+            <button class="chip" data-type="appartement">Appartement</button>
+            <button class="chip" data-type="maison">Maison</button>
+            <button class="chip" data-type="terrain">Terrain</button>
+            <button class="chip" data-type="local">Local commercial</button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label>Prix maximum (EUR)</label>
+          <div class="range"><input id="maxPrice" type="range" min="0" max="1000000" value="500000"><div id="maxPriceVal" style="font-weight:800">500 000</div></div>
+        </div>
+
+        <div class="filter-group">
+          <label>Chambres</label>
+          <div>
+            <button class="chip" data-bed="all">Toutes</button>
+            <button class="chip" data-bed="1">1</button>
+            <button class="chip" data-bed="2">2</button>
+            <button class="chip" data-bed="3">3</button>
+            <button class="chip" data-bed="4">4+</button>
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <label>Localisation</label>
+          <select id="locationSelect" style="padding:8px;border-radius:8px;border:1px solid rgba(44,62,80,0.06);width:100%">
+            <option value="all">Toutes</option>
+            <option value="Douala">Douala</option>
+            <option value="Yaounde">Yaoundé</option>
+            <option value="Lagos">Lagos</option>
+            <option value="Paris">Paris</option>
+          </select>
+        </div>
+
+        <div style="display:flex;gap:8px;justify-content:space-between;margin-top:8px">
+          <button class="btn" id="applyFilters" style="width:100%">Appliquer</button>
+          <button class="btn ghost" id="resetFilters" style="width:100%">Réinitialiser</button>
+        </div>
+
+        <hr style="margin:12px 0;border:none;border-top:1px solid rgba(44,62,80,0.06)">
+
+        <div class="filter-group">
+          <label>Simulateur de prêt</label>
+          <div class="calc">
+            <div class="calc-row"><label style="width:120px">Montant (€)</label><input id="loanAmount" type="number" value="100000" style="flex:1;padding:8px;border-radius:6px;border:1px solid rgba(44,62,80,0.06)"></div>
+            <div class="calc-row"><label style="width:120px">Durée (ans)</label><input id="loanYears" type="number" value="20" style="flex:1;padding:8px;border-radius:6px;border:1px solid rgba(44,62,80,0.06)"></div>
+            <div class="calc-row"><label style="width:120px">Taux (%)</label><input id="loanRate" type="number" step="0.01" value="4.5" style="flex:1;padding:8px;border-radius:6px;border:1px solid rgba(44,62,80,0.06)"></div>
+            <div style="display:flex;gap:8px;justify-content:flex-end">
+              <button class="btn" id="calcLoan">Calculer</button>
+            </div>
+            <div id="loanResult" style="margin-top:8px;font-weight:800;color:var(--secondary-color)"></div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- LISTINGS -->
+      <section>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+          <div><strong id="resultsCount">0</strong> biens trouvés</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <label class="muted">Trier par</label>
+            <select id="sortSelect" style="padding:8px;border-radius:8px;border:1px solid rgba(44,62,80,0.06)">
+              <option value="reco">Recommandés</option>
+              <option value="price-asc">Prix croissant</option>
+              <option value="price-desc">Prix décroissant</option>
+              <option value="newest">Les plus récents</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="results" id="resultsGrid" aria-live="polite">
+          <!-- Cards générées par JS -->
+        </div>
+
+        <div style="height:18px"></div>
+
+        <!-- MAP -->
+        <div class="card">
+          <h3>Carte — Emplacements des biens</h3>
+          <!-- iframe Google Maps (exemple) : si vous voulez l'affiner, remplacez par API dynamique -->
+          <div class="map" id="mapWrap">
+            <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d19806.25416858837!2d9.680305981953213!3d4.031697142007123!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x10610e1a0f0bd0f1%3A0x123456789abcdef!2sDouala!5e0!3m2!1sfr!2scm!4v1690000000000" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+          </div>
+        </div>
+
+      </section>
+    </div>
+
+    <footer>
+      <div style="max-width:1200px;margin:20px auto;text-align:center;color:var(--muted)">
+        © <span id="year"></span> NANA RAFF — Immobilier • Tous droits réservés.
+      </div>
+    </footer>
+  </main>
+
+  <!-- ================= MODAL DETAIL PRODUIT ================= -->
+  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <button class="close" id="closeModal" aria-label="Fermer">✕</button>
+      <div id="modalBody">
+        <!-- Contenu injecté dynamiquement -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Toasts -->
+  <div id="toastWrap" aria-live="polite" style="position:fixed;right:18px;bottom:18px;z-index:999"></div>
+
+  <!-- ===========================
+       Script JS : logique & commentaires
+       - Liste des biens (sample)
+       - Filtres / recherche / tri
+       - Modal détail, carousel
+       - Prêt simulation
+       - Favoris (localStorage)
+       - Export CSV favoris
+       - Événements & accessibilité
+       =========================== -->
+  <script>
+  /**
+   * immobilier.html
+   * Page complète "Immobilier" pour NANA RAFF
+   *
+   * Fonctionnalités principales :
+   * - Affichage listé des biens (sample data)
+   * - Recherche, filtres (type, prix, chambres, lieu), tri
+   * - Modal détaillé par bien (images carousel, description, caractéristiques)
+   * - Contact agent (formulaire) dans modal
+   * - Calculatrice de prêt / mensualité
+   * - Favoris : ajouter/supprimer, stocké en localStorage (clé: 'immofavs')
+   * - Export CSV des favoris
+   *
+   * Notes:
+   * - Les images sont publiques (Unsplash / Picsum) et incluses par URL.
+   * - Pour un vrai projet : remplacer sample data par endpoint API et gérer l'authentification.
+   */
+
+  // ---------- Helpers ----------
+  function uid(pref='id'){ return pref + '_' + Math.random().toString(36).slice(2,9); }
+  function toast(msg, time=2400){
+    const t = document.createElement('div'); t.className='toast'; t.textContent = msg;
+    document.getElementById('toastWrap').appendChild(t);
+    setTimeout(()=> t.style.opacity = '0', time-300);
+    setTimeout(()=> t.remove(), time);
+  }
+  function formatCurrency(v){
+    return (typeof v==='number' ? v : parseFloat(v||0)).toLocaleString('fr-FR',{style:'currency',currency:'EUR'});
+  }
+
+  // ---------- Sample data: biens ----------
+  // Longue liste d'exemples pour afficher et tester la page.
+  const initialProperties = [
+    {
+      id: uid('p'), title: "Appartement 3 pièces, centre Douala", type: "appartement",
+      city: "Douala", beds: 3, price: 85000, area: 95,
+      images: [
+        "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?auto=format&fit=crop&w=1200&q=80",
+        "https://images.unsplash.com/photo-1560448206-9f8f3c6e6a1b?auto=format&fit=crop&w=1200&q=80",
+        "https://picsum.photos/id/1018/1200/800"
+      ],
+      short: "Bel appartement lumineux proche commerces et transports.",
+      desc: "Appartement moderne de 95 m², 3 chambres, 2 salles de bain, balcon, cuisine équipée. Idéal pour famille ou investissement locatif.",
+      agent: {name:"Jean Mb", phone:"+237 6 75 47 94 04", email:"jean.mb@nana-raff.com"},
+      date: Date.now() - 1000*60*60*24*32
+    },
+    {
+      id: uid('p'), title: "Maison familiale à Yaoundé", type: "maison",
+      city: "Yaounde", beds: 4, price: 150000, area: 220,
+      images: [
+        "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=1200&q=80",
+        "https://picsum.photos/id/1025/1200/800",
+      ],
+      short: "Spacieuse maison avec jardin et garage.",
+      desc: "Maison 4 chambres, vaste salon, jardin clôturé, garage 2 véhicules. Quartier calme et sécurité 24/7.",
+      agent: {name:"Amina T", phone:"+237 6 99 88 77 66", email:"amina.t@nana-raff.com"},
+      date: Date.now() - 1000*60*60*24*90
+    },
+    {
+      id: uid('p'), title: "Terrain constructible - 800 m²", type: "terrain",
+      city: "Douala", beds: 0, price: 60000, area: 800,
+      images: ["https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1200&q=80"],
+      short: "Terrain plat, accès route principale.",
+      desc: "Terrain idéal pour lotissement ou projet logement. Viabilisation à proximité, titre foncier disponible.",
+      agent: {name:"Paul M", phone:"+237 6 66 55 44 33", email:"paul.m@nana-raff.com"},
+      date: Date.now() - 1000*60*60*24*12
+    },
+    {
+      id: uid('p'), title: "Local commercial centre ville", type: "local",
+      city: "Lagos", beds: 0, price: 180000, area: 150,
+      images: ["https://images.unsplash.com/photo-1493809842364-78817add7ffb?auto=format&fit=crop&w=1200&q=80"],
+      short: "Emplacement premium pour boutique ou bureau.",
+      desc: "Local de 150 m² avec vitrine sur rue commerçante, excellent flux piéton.",
+      agent: {name:"Sonia K", phone:"+234 80 0000 000", email:"sonia.k@nana-raff.com"},
+      date: Date.now() - 1000*60*60*24*7
+    },
+    {
+      id: uid('p'), title: "Studio cosy à Paris", type: "appartement",
+      city: "Paris", beds: 1, price: 225000, area: 28,
+      images: ["https://images.unsplash.com/photo-1505691723518-36a3a1c3b7f6?auto=format&fit=crop&w=1200&q=80"],
+      short: "Parfait pour jeune actif, proche métro.",
+      desc: "Studio rénové, kitchenette équipée, très bien situé dans quartier dynamique.",
+      agent: {name:"Élodie P", phone:"+33 6 12 34 56 78", email:"elodie.p@nana-raff.com"},
+      date: Date.now() - 1000*60*60*24*2
+    },
+    // ... ajoutez autant d'éléments que nécessaire pour tests
+  ];
+
+  // ---------- Storage keys ----------
+  const STORAGE_KEY_FAVS = 'immofavs';
+  const STORAGE_KEY_PROPS = 'immo_props';
+
+  // ---------- Initialize data ----------
+  (function seedProps(){
+    if(!localStorage.getItem(STORAGE_KEY_PROPS)){
+      localStorage.setItem(STORAGE_KEY_PROPS, JSON.stringify(initialProperties));
+    }
+  })();
+
+  // ---------- Load & render ----------
+  function loadProps(){
+    return JSON.parse(localStorage.getItem(STORAGE_KEY_PROPS) || '[]');
+  }
+  function saveProps(list){
+    localStorage.setItem(STORAGE_KEY_PROPS, JSON.stringify(list));
+  }
+
+  // ---------- Favorites ----------
+  function loadFavs(){ return JSON.parse(localStorage.getItem(STORAGE_KEY_FAVS) || '[]'); }
+  function saveFavs(arr){ localStorage.setItem(STORAGE_KEY_FAVS, JSON.stringify(arr)); }
+
+  // ---------- Render results ----------
+  const resultsGrid = document.getElementById('resultsGrid');
+  const resultsCount = document.getElementById('resultsCount');
+
+  function renderResults(props){
+    resultsGrid.innerHTML = '';
+    if(!props || props.length === 0){
+      resultsGrid.innerHTML = '<div class="card" style="padding:30px;text-align:center;color:var(--muted)">Aucun bien trouvé selon vos critères.</div>';
+      resultsCount.textContent = '0';
+      return;
+    }
+    const favs = loadFavs();
+    resultsCount.textContent = props.length;
+
+    props.forEach(p=>{
+      const card = document.createElement('article');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="media"><img src="${p.images[0]}" alt="${escapeHtml(p.title)}"></div>
+        <div class="body">
+          <div class="title-row">
+            <h3>${escapeHtml(p.title)}</h3>
+            <div style="margin-left:auto;text-align:right">
+              <div class="price">${formatCurrency(p.price)}</div>
+              <div class="meta">${p.area} m² • ${p.city}</div>
+            </div>
+          </div>
+          <div class="meta">${escapeHtml(p.short)}</div>
+          <div class="tags" style="margin-top:8px">
+            <div class="tag">${p.type}</div>
+            <div class="tag">${p.beds} ch</div>
+          </div>
+          <div class="actions">
+            <button class="btn" data-action="view" data-id="${p.id}">Voir détails</button>
+            <button class="btn ghost" data-action="contact" data-id="${p.id}">Contacter</button>
+            <button class="fav ${favs.includes(p.id)?'active':''}" title="Ajouter aux favoris" data-action="fav" data-id="${p.id}">★</button>
+          </div>
+        </div>
+      `;
+      resultsGrid.appendChild(card);
+    });
+
+    // attach listeners
+    resultsGrid.querySelectorAll('[data-action="view"]').forEach(b=> b.addEventListener('click', e=> showDetail(e.target.dataset.id)));
+    resultsGrid.querySelectorAll('[data-action="contact"]').forEach(b=> b.addEventListener('click', e=> openContactForm(e.target.dataset.id)));
+    resultsGrid.querySelectorAll('[data-action="fav"]').forEach(b=> b.addEventListener('click', e=> toggleFav(e.target.dataset.id, e.target)));
+  }
+
+  // Escape helper
+  function escapeHtml(s){ return String(s||'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+
+  // ---------- Filtering / Sorting ----------
+  const chips = document.querySelectorAll('.chip');
+  const maxPriceInput = document.getElementById('maxPrice');
+  const maxPriceVal = document.getElementById('maxPriceVal');
+  const bedChips = document.querySelectorAll('[data-bed]');
+  const applyFiltersBtn = document.getElementById('applyFilters');
+  const resetFiltersBtn = document.getElementById('resetFilters');
+  const locationSelect = document.getElementById('locationSelect');
+  const sortSelect = document.getElementById('sortSelect');
+  const searchInput = document.getElementById('searchInput');
+
+  let currentFilters = { type: 'all', maxPrice: Number(maxPriceInput.value), beds: 'all', city:'all', q: '' };
+
+  // update displayed price value
+  maxPriceInput.addEventListener('input', ()=> maxPriceVal.textContent = Number(maxPriceInput.value).toLocaleString('fr-FR'));
+
+  // chip click handlers (type)
+  document.querySelectorAll('[data-type]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('[data-type]').forEach(x=>x.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilters.type = btn.dataset.type;
+    });
+  });
+
+  // bed chips
+  document.querySelectorAll('[data-bed]').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      document.querySelectorAll('[data-bed]').forEach(x=>x.classList.remove('active'));
+      btn.classList.add('active');
+      currentFilters.beds = btn.dataset.bed;
+    });
+  });
+
+  // Apply / Reset filters
+  applyFiltersBtn.addEventListener('click', applyFilters);
+  resetFiltersBtn.addEventListener('click', ()=>{
+    currentFilters = { type:'all', maxPrice:500000, beds:'all', city:'all', q:'' };
+    maxPriceInput.value = 500000; maxPriceVal.textContent = '500 000';
+    document.querySelectorAll('[data-type]').forEach(x=>x.classList.remove('active'));
+    document.querySelector('[data-type="all"]').classList.add('active');
+    document.querySelectorAll('[data-bed]').forEach(x=>x.classList.remove('active'));
+    document.querySelector('[data-bed="all"]').classList.add('active');
+    locationSelect.value = 'all';
+    searchInput.value = '';
+    renderResults(loadProps());
+  });
+
+  // sort & search wired
+  sortSelect.addEventListener('change', applyFilters);
+  searchInput.addEventListener('input', ()=> currentFilters.q = searchInput.value);
+
+  function applyFilters(){
+    const props = loadProps();
+    currentFilters.maxPrice = Number(maxPriceInput.value);
+    currentFilters.city = locationSelect.value;
+    let filtered = props.filter(p=>{
+      if(currentFilters.type !== 'all' && p.type !== currentFilters.type) return false;
+      if(currentFilters.city !== 'all' && p.city !== currentFilters.city) return false;
+      if(p.price > currentFilters.maxPrice) return false;
+      if(currentFilters.beds !== 'all'){
+        if(currentFilters.beds === '4' && p.beds < 4) return false;
+        if(currentFilters.beds !== '4' && p.beds !== Number(currentFilters.beds)) return false;
+      }
+      if(currentFilters.q){
+        const q = currentFilters.q.toLowerCase();
+        if(!(p.title.toLowerCase().includes(q) || p.city.toLowerCase().includes(q) || (p.short && p.short.toLowerCase().includes(q)))) return false;
+      }
+      return true;
+    });
+
+    // sorting
+    const sort = sortSelect.value;
+    if(sort === 'price-asc') filtered.sort((a,b)=>a.price-b.price);
+    if(sort === 'price-desc') filtered.sort((a,b)=>b.price-a.price);
+    if(sort === 'newest') filtered.sort((a,b)=>b.date - a.date);
+
+    renderResults(filtered);
+  }
+
+  // ---------- Modal detail ----------
+  const modalBackdrop = document.getElementById('modalBackdrop');
+  const modalBody = document.getElementById('modalBody');
+  const closeModalBtn = document.getElementById('closeModal');
+
+  function showDetail(id){
+    const props = loadProps();
+    const p = props.find(x=>x.id===id);
+    if(!p) return toast('Bien introuvable');
+    // build modal content with carousel and details
+    modalBody.innerHTML = `
+      <div style="display:flex;gap:14px;flex-direction:column">
+        <div style="display:flex;flex-direction:column">
+          <div class="carousel">
+            <div class="carousel-main"><img src="${p.images[0]}" id="mainImg" style="width:100%;height:100%;object-fit:cover;border-radius:8px" alt="${escapeHtml(p.title)}"></div>
+            <div class="carousel-thumbs" id="thumbs">
+              ${p.images.map((src,i)=>`<img src="${src}" class="thumb ${i===0?'active':''}" data-src="${src}" alt="image ${i+1}">`).join('')}
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:14px;flex-wrap:wrap">
+          <div style="flex:1">
+            <h3 id="modalTitle">${escapeHtml(p.title)}</h3>
+            <div style="color:var(--muted)">${p.area} m² • ${p.beds} ch • ${p.city}</div>
+            <div style="height:8px"></div>
+            <div style="font-size:15px">${escapeHtml(p.desc)}</div>
+          </div>
+
+          <aside style="width:320px">
+            <div style="background:linear-gradient(180deg,rgba(39,174,96,0.04),rgba(0,0,0,0.01));padding:12px;border-radius:8px">
+              <div style="display:flex;justify-content:space-between;align-items:center">
+                <div style="font-weight:800;color:var(--primary-color);font-size:20px">${formatCurrency(p.price)}</div>
+                <div class="meta">Réf : ${p.id}</div>
+              </div>
+              <div style="height:10px"></div>
+              <div style="font-size:14px;color:var(--muted)"><strong>Agent :</strong> ${p.agent.name}<br>${p.agent.phone}<br><a href="mailto:${p.agent.email}">${p.agent.email}</a></div>
+              <div style="height:12px"></div>
+
+              <div style="display:flex;gap:8px">
+                <button class="btn" id="btnContactModal">Contacter l'agent</button>
+                <button class="btn ghost" id="btnSaveFavModal">★ Favoris</button>
+              </div>
+
+              <div style="height:10px"></div>
+              <div style="font-size:13px;color:var(--muted)">Simulation prêt rapide</div>
+              <div style="display:flex;gap:6px;margin-top:6px">
+                <input id="loanAmountModal" type="number" value="${p.price}" style="flex:1;padding:8px;border-radius:6px;border:1px solid rgba(44,62,80,0.06)">
+                <button class="btn" id="calcLoanModal">Calc</button>
+              </div>
+              <div id="loanResultModal" style="margin-top:8px;font-weight:700;color:var(--secondary-color)"></div>
+            </div>
+          </aside>
+        </div>
+      </div>
+    `;
+
+    // show modal
+    modalBackdrop.classList.add('show');
+    modalBackdrop.setAttribute('aria-hidden','false');
+
+    // thumb click
+    modalBody.querySelectorAll('.thumb').forEach(t=>{
+      t.addEventListener('click', (e)=>{
+        const src = t.dataset.src;
+        document.getElementById('mainImg').src = src;
+        modalBody.querySelectorAll('.thumb').forEach(x=>x.classList.remove('active'));
+        t.classList.add('active');
+      });
+    });
+
+    // contact button
+    document.getElementById('btnContactModal').addEventListener('click', ()=> openContactForm(p.id));
+
+    // save fav modal
+    document.getElementById('btnSaveFavModal').addEventListener('click', ()=>{
+      toggleFav(p.id, null);
+      // update button state
+      document.getElementById('btnSaveFavModal').textContent = '★ Favoris';
+    });
+
+    // loan calc in modal
+    document.getElementById('calcLoanModal').addEventListener('click', ()=>{
+      const amt = Number(document.getElementById('loanAmountModal').value) || 0;
+      // default params
+      const years = 20; const rate = 4.5;
+      const monthly = mortgagePayment(amt, rate/100, years*12);
+      document.getElementById('loanResultModal').textContent = monthly ? `Mensualité ≈ ${formatCurrency(monthly)}/mois` : 'Entrer un montant valide';
+    });
+  }
+
+  // close modal handlers
+  closeModalBtn.addEventListener('click', ()=> {
+    modalBackdrop.classList.remove('show'); modalBackdrop.setAttribute('aria-hidden','true');
+  });
+  modalBackdrop.addEventListener('click', (e)=>{ if(e.target === modalBackdrop){ modalBackdrop.classList.remove('show'); modalBackdrop.setAttribute('aria-hidden','true'); } });
+
+  // ---------- Contact form (modal) ----------
+  function openContactForm(propId){
+    const props = loadProps();
+    const p = props.find(x=>x.id===propId);
+    openContactModal(p);
+  }
+
+  function openContactModal(property){
+    const html = `
+      <h3>Contacter l'agent — ${escapeHtml(property.title)}</h3>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <input id="contactName" placeholder="Votre nom" style="padding:8px;border-radius:8px;border:1px solid rgba(44,62,80,0.06)">
+        <input id="contactEmail" placeholder="Votre email" style="padding:8px;border-radius:8px;border:1px solid rgba(44,62,80,0.06)">
+        <textarea id="contactMessage" placeholder="Votre message..." style="padding:8px;border-radius:8px;border:1px solid rgba(44,62,80,0.06);min-height:120px"></textarea>
+        <div style="display:flex;justify-content:flex-end;gap:8px">
+          <button class="btn ghost" id="cancelContact">Annuler</button>
+          <button class="btn" id="sendContact">Envoyer</button>
+        </div>
+      </div>
+    `;
+    // inject into modalBody and show
+    modalBody.innerHTML = html;
+    modalBackdrop.classList.add('show'); modalBackdrop.setAttribute('aria-hidden','false');
+
+    document.getElementById('cancelContact').addEventListener('click', ()=> { modalBackdrop.classList.remove('show'); modalBackdrop.setAttribute('aria-hidden','true'); });
+
+    document.getElementById('sendContact').addEventListener('click', ()=>{
+      const name = document.getElementById('contactName').value.trim();
+      const email = document.getElementById('contactEmail').value.trim();
+      const message = document.getElementById('contactMessage').value.trim();
+      if(!name || !email || !message){ toast('Remplir tous les champs'); return; }
+      // Simulation: on stocke la demande dans localStorage (clé: immo_inquiries) pour que l'admin puisse la voir
+      const inquiries = JSON.parse(localStorage.getItem('immo_inquiries') || '[]');
+      inquiries.push({id: uid('inq'), propertyId: property.id, name, email, message, date: Date.now()});
+      localStorage.setItem('immo_inquiries', JSON.stringify(inquiries));
+      toast('Message envoyé à l’agent (simulation)');
+      modalBackdrop.classList.remove('show'); modalBackdrop.setAttribute('aria-hidden','true');
+    });
+  }
+
+  // ---------- Mortgage Payment helper ----------
+  // Formula for monthly payment: M = P * r / (1 - (1+r)^-n)
+  function mortgagePayment(P, monthlyRate, nMonths){
+    if(!P || !monthlyRate || !nMonths) return null;
+    const r = monthlyRate; // monthly rate in decimal
+    return (P * r) / (1 - Math.pow(1 + r, -nMonths));
+  }
+
+  // ---------- Loan calc in sidebar ----------
+  document.getElementById('calcLoan').addEventListener('click', ()=>{
+    const amt = Number(document.getElementById('loanAmount').value) || 0;
+    const years = Number(document.getElementById('loanYears').value) || 20;
+    const rate = Number(document.getElementById('loanRate').value) || 4.5;
+    const monthly = mortgagePayment(amt, rate/100/12, years*12);
+    document.getElementById('loanResult').textContent = monthly ? `Mensualité ≈ ${formatCurrency(monthly)}/mois` : 'Entrer des valeurs valides';
+  });
+
+  // ---------- Favorites ----------
+  function toggleFav(id, btnEl){
+    const favs = loadFavs();
+    const idx = favs.indexOf(id);
+    if(idx >= 0){
+      favs.splice(idx,1);
+      toast('Supprimé des favoris');
+    } else {
+      favs.push(id);
+      toast('Ajouté aux favoris');
+    }
+    saveFavs(favs);
+    // update UI button if provided
+    if(btnEl){
+      if(favs.includes(id)) btnEl.classList.add('active'); else btnEl.classList.remove('active');
+    }
+  }
+
+  // View favorites list
+  document.getElementById('viewFavs').addEventListener('click', ()=>{
+    const favs = loadFavs();
+    if(favs.length === 0){ toast('Aucun favori pour le moment'); return; }
+    const props = loadProps().filter(p => favs.includes(p.id));
+    // build modal content
+    let html = '<h3>Favoris</h3><div style="display:flex;flex-direction:column;gap:8px">';
+    props.forEach(p=>{
+      html += `<div style="display:flex;gap:12px;align-items:center">
+        <img src="${p.images[0]}" style="width:100px;height:70px;object-fit:cover;border-radius:8px">
+        <div style="flex:1">
+          <strong>${escapeHtml(p.title)}</strong><div class="muted">${p.city} • ${p.beds} ch • ${formatCurrency(p.price)}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <button class="btn" data-id="${p.id}" data-action="view">Voir</button>
+          <button class="btn ghost" data-id="${p.id}" data-action="remove">Retirer</button>
+        </div>
+      </div>`;
+    });
+    html += `<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px">
+      <button class="btn" id="exportFavs">Exporter CSV</button>
+      <button class="btn ghost" id="closeFavs">Fermer</button>
+    </div></div>`;
+    modalBody.innerHTML = html;
+    modalBackdrop.classList.add('show'); modalBackdrop.setAttribute('aria-hidden','false');
+
+    // listeners
+    modalBody.querySelectorAll('[data-action="view"]').forEach(b=>b.addEventListener('click', e=> {
+      modalBackdrop.classList.remove('show'); modalBackdrop.setAttribute('aria-hidden','true');
+      showDetail(e.target.dataset.id);
+    }));
+    modalBody.querySelectorAll('[data-action="remove"]').forEach(b=>b.addEventListener('click', e=>{
+      const id = e.target.dataset.id; const favs = loadFavs();
+      const idx = favs.indexOf(id); if(idx>=0) favs.splice(idx,1); saveFavs(favs); toast('Favori retiré'); modalBackdrop.classList.remove('show'); modalBackdrop.setAttribute('aria-hidden','true'); renderResults(loadProps());
+    }));
+
+    document.getElementById('closeFavs').addEventListener('click', ()=> { modalBackdrop.classList.remove('show'); modalBackdrop.setAttribute('aria-hidden','true'); });
+    document.getElementById('exportFavs').addEventListener('click', exportFavsCSV);
+  });
+
+  function exportFavsCSV(){
+    const favs = loadFavs();
+    const props = loadProps().filter(p => favs.includes(p.id));
+    let csv = 'id,title,city,type,beds,area,price\n';
+    props.forEach(p=>{
+      csv += `${p.id},"${p.title.replace(/"/g,'""')}",${p.city},${p.type},${p.beds},${p.area},${p.price}\n`;
+    });
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = 'nana_raff_favoris.csv'; document.body.appendChild(a); a.click(); a.remove();
+    URL.revokeObjectURL(url);
+    toast('Export CSV des favoris');
+  }
+
+  // ---------- Utility: search and initial render ----------
+  function initialRender(){
+    // fill initial UI values
+    document.getElementById('year').textContent = new Date().getFullYear();
+    maxPriceVal.textContent = Number(maxPriceInput.value).toLocaleString('fr-FR');
+
+    // initial render with all properties
+    renderResults(loadProps());
+  }
+
+  // ---------- Search on Enter ----------
+  searchInput.addEventListener('keydown', (e)=> {
+    if(e.key === 'Enter'){ currentFilters.q = searchInput.value; applyFilters(); }
+  });
+
+  // ---------- Open contact from search results or buttons ----------
+  // Already wired in renderResults
+
+  // ---------- Simple admin sync note ----------
+  // If other pages (dashboard, produits) update the property list and set localStorage 'immo_updated',
+  // we detect it here and notify the user to refresh
+  window.addEventListener('storage', (e)=>{
+    if(e.key === 'immo_updated'){
+      toast('Mise à jour détectée depuis une autre page — rechargement des biens');
+      renderResults(loadProps());
+    }
+  });
+
+  // ---------- Mortgage helper used earlier: wrapper ----------
+  function mortgagePayment(P, annualRatePercent, years){
+    const r = annualRatePercent/100/12;
+    const n = years*12;
+    if(!P||!r||!n) return null;
+    return (P * r) / (1 - Math.pow(1 + r, -n));
+  }
+
+  // ---------- Event: loan calc modal (global) ----------
+  // Already implemented in showDetail and sidebar
+
+  // ---------- Apply initial render ----------
+  initialRender();
+
+  // ---------- Expose some functions to global for debugging (optional) ----------
+  window._nana = { loadProps, saveProps, toggleFav, loadFavs, exportFavsCSV };
+
+  </script>
+</body>
+</html>

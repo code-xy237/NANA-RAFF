@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NANA RAFF | Conseils & Blog</title>
+  <style>
+    :root {
+  --primary-color:   #27ae60;
+  --secondary-color: #2c3e50;
+  --background-color:#ecf0f1;
+  --text-color:      #2c3e50;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  background: var(--background-color);
+  color: var(--text-color);
+}
+
+/* HEADER */
+.main-header {
+  background: var(--secondary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 3rem;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.logo { font-size: 1.5rem; font-weight: bold; }
+.logo span { color: var(--primary-color); }
+.main-header nav ul {
+  list-style: none;
+  display: flex;
+  gap: 2rem;
+  margin: 0; padding: 0;
+}
+.main-header nav a {
+  color: white; text-decoration: none; transition: color .3s;
+}
+.main-header nav a.active,
+.main-header nav a:hover { color: var(--primary-color); }
+
+/* HERO */
+.hero {
+  position: relative;
+  height: 40vh;
+  overflow: hidden;
+}
+.hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(70%);
+}
+.hero-text {
+  position: absolute;
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%);
+  text-align: center;
+  color: white;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.6);
+}
+.hero-text h1 { font-size: 2.5rem; margin: 0; }
+
+/* BLOG GRID */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 4rem 1.5rem;
+}
+.container h2 {
+  text-align: center;
+  font-size: 2.2rem;
+  color: var(--secondary-color);
+}
+.sub {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #555;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 2rem;
+}
+.post {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  overflow: hidden;
+  transform: translateY(40px);
+  opacity: 1;
+  transition: all .6s ease;
+}
+.post img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+.post h3 {
+  color: var(--primary-color);
+  padding: 1rem 1rem 0;
+  margin: 0;
+}
+.post p.muted {
+  padding: 0 1rem 1rem;
+  color: #666;
+}
+.btn.ghost {
+  margin: 0 1rem 1.5rem;
+  background: transparent;
+  border: 2px solid var(--primary-color);
+  color: var(--primary-color);
+  padding: .5rem 1rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all .3s;
+}
+.btn.ghost:hover {
+  background: var(--primary-color);
+  color: white;
+}
+.post.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+/* FOOTER */
+.main-footer {
+  background: var(--secondary-color);
+  color: white;
+  text-align: center;
+  padding: 1rem;
+}
+
+header{position:relative;z-index:30;background:linear-gradient(90deg, rgba(255,255,255,0.8), rgba(255,255,255,0.6));backdrop-filter: blur(6px);box-shadow: 0 6px 18px rgba(44,62,80,0.08);}
+    .nav{max-width:1200px;margin:0 auto;padding:13px 20px;display:flex;align-items:center;gap:18px;justify-content:space-between;}
+    .brand{display:flex;align-items:center;gap:12px;transform: translateY(-2px);}
+    .logo-img{width:60px;height:auto;border-radius:30%;}
+    nav ul{display:flex;gap:12px;align-items:center;list-style:none;}
+    nav li{padding:8px 12px;border-radius:8px;color:var(--muted);font-weight:600;}
+    nav li:hover{color:var(--secondary-color); background: rgba(44,62,80,0.03);}
+    nav a{
+      text-decoration: none;
+      color: rgba(90, 88, 88, 0.8);
+      font-size: 18px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+  <div class="nav">
+    <div class="brand">
+      <img src="image/logo_1.jpeg" alt="Logo NANA RAFF" class="logo-img">
+      <div>
+        <h1>NANA RAFF</h1>
+        <div style="font-size:12px;color:var(--muted)">Boutique | Bien-être & Beauté</div>
+      </div>
+    </div>
+    <nav>
+      <ul>
+        <a href="index.html"><li>Accueil</li></a>
+        <a href="D:\NANA RAFF final\frontend\public\partenariats.html"><li>Partenariat</li></a>
+        <a href="D:\NANA RAFF final\frontend\public\conseil.html"><li>Conseils</li></a>
+        <a href="D:\NANA RAFF final\frontend\public\contact.html"><li>Contact</li></a>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+  <!-- HERO BANNIERE -->
+  <section class="hero">
+    <img src="https://th.bing.com/th/id/OIP.sid0nLivPD9ph-mjarQzuwHaE7?w=248&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3" alt="Conseils Santé">
+    <div class="hero-text">
+      <h1>Conseils & Blog Bien-Être</h1>
+      <p>Des astuces pratiques pour la santé, la nutrition et la minceur.</p>
+    </div>
+  </section>
+
+  <!-- BLOG CONSEILS -->
+  <section id="blog" class="container" aria-label="Conseils">
+    <h2>Nos derniers articles</h2>
+    <div class="sub">Des conseils rapides et efficaces pour prendre soin de votre corps.</div>
+
+    <div class="grid">
+      <article class="post">
+        <img src="https://images.pexels.com/photos/416528/pexels-photo-416528.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Hydratation">
+        <h3>Hydratation et gestion de l’appétit</h3>
+        <p class="muted">Boire 1,5–2 L/jour régule la satiété, stimule le métabolisme et maintient l’énergie.</p>
+        <button class="btn ghost">Lire</button>
+      </article>
+
+      <article class="post">
+        <img src="https://images.pexels.com/photos/4056723/pexels-photo-4056723.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Routine matinale">
+        <h3>Routine 10 minutes pour débuter</h3>
+        <p class="muted">Marche active, mobilité articulaire et respiration pour réveiller le corps.</p>
+        <button class="btn ghost">Lire</button>
+      </article>
+
+      <article class="post">
+        <img src="https://images.pexels.com/photos/1552252/pexels-photo-1552252.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Brûleur de graisse">
+        <h3>Choisir un brûleur de graisse</h3>
+        <p class="muted">Les critères essentiels : composition, précautions et dosage sécurisé.</p>
+        <button class="btn ghost">Lire</button>
+      </article>
+
+      <article class="post">
+        <img src="https://images.pexels.com/photos/1028725/pexels-photo-1028725.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Sommeil">
+        <h3>Sommeil & perte de poids</h3>
+        <p class="muted">Un sommeil de 7–8 h favorise la régulation hormonale et la récupération.</p>
+        <button class="btn ghost">Lire</button>
+      </article>
+
+      <article class="post">
+        <img src="https://images.pexels.com/photos/3823063/pexels-photo-3823063.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Alimentation équilibrée">
+        <h3>Planifier ses repas</h3>
+        <p class="muted">Équilibrer protéines, fibres et bons lipides pour un poids stable.</p>
+        <button class="btn ghost">Lire</button>
+      </article>
+
+      <article class="post">
+        <img src="https://images.pexels.com/photos/3757375/pexels-photo-3757375.jpeg?auto=compress&cs=tinysrgb&w=800" alt="Gestion du stress">
+        <h3>Stress & minceur</h3>
+        <p class="muted">Respiration, méditation et pauses actives pour réduire le cortisol.</p>
+        <button class="btn ghost">Lire</button>
+      </article>
+    </div>
+  </section>
+
+  <footer class="main-footer">
+    <p>&copy; 2025 NANA RAFF. Tous droits réservés.</p>
+  </footer>
+
+  <script>
+    const conseils = [
+  {
+    title:"Hydratation et gestion de l’appétit",
+    img:"https://images.pexels.com/photos/416528/pexels-photo-416528.jpeg?auto=compress&cs=tinysrgb&w=800",
+    desc:"Boire 1,5–2 L d’eau par jour aide à réguler la satiété, favorise l’élimination des toxines et soutient le métabolisme.",
+    usage:"Boire régulièrement tout au long de la journée.",
+    precaution:"Ne pas dépasser 3L d’eau par jour.",
+    composition:"Eau, éventuellement fruits infusés."
+  },
+  {
+    title:"Routine 10 minutes pour débuter",
+    img:"https://images.pexels.com/photos/4498294/pexels-photo-4498294.jpeg?auto=compress&cs=tinysrgb&w=800",
+    desc:"Une courte séance de marche active, d’étirements et de respiration consciente pour relancer l’énergie et améliorer la posture.",
+    usage:"10 minutes par jour, idéalement le matin.",
+    precaution:"Éviter les exercices si blessé.",
+    composition:"Marche, étirements, respiration."
+  },
+  {
+    title:"Choisir un brûleur de graisse",
+    img:"https://images.pexels.com/photos/6740828/pexels-photo-6740828.jpeg?auto=compress&cs=tinysrgb&w=800",
+    desc:"Vérifiez la composition et les certifications médicales avant usage. L’alimentation reste la clé.",
+    usage:"Suivre la posologie indiquée.",
+    precaution:"Ne pas utiliser sans avis médical.",
+    composition:"Ingrédients naturels ou chimiques selon produit."
+  },
+  {
+    title:"Sommeil & perte de poids",
+    img:"https://images.pexels.com/photos/3771069/pexels-photo-3771069.jpeg?auto=compress&cs=tinysrgb&w=800",
+    desc:"Un sommeil de 7–8 heures régule les hormones de la faim et soutient le métabolisme.",
+    usage:"Dormir 7–8h par nuit, à heures régulières.",
+    precaution:"Éviter écrans lumineux avant le coucher.",
+    composition:"Repos, environnement calme."
+  }
+];
+
+const grid = document.getElementById('conseilGrid');
+const modalBackdrop = document.getElementById('modalBackdrop');
+const modalImage = document.getElementById('modalImage');
+const modalTitle = document.getElementById('modalTitle');
+const modalDesc = document.getElementById('modalDesc');
+const modalUsage = document.getElementById('modalUsage');
+const modalPrecaution = document.getElementById('modalPrecaution');
+const modalComposition = document.getElementById('modalComposition');
+const closeModal = document.getElementById('closeModal');
+
+conseils.forEach(c => {
+  const article = document.createElement('article');
+  article.className = "post";
+  article.innerHTML = `
+    <div class="media"><img src="${c.img}" alt="${c.title}"></div>
+    <div class="body">
+      <h3>${c.title}</h3>
+      <p class="muted">${c.desc}</p>
+      <button class="btn ghost">Lire</button>
+    </div>
+  `;
+  article.querySelector('button').addEventListener('click',()=> {
+    modalImage.src = c.img;
+    modalTitle.textContent = c.title;
+    modalDesc.textContent = c.desc;
+    modalUsage.textContent = c.usage;
+    modalPrecaution.textContent = c.precaution;
+    modalComposition.textContent = c.composition;
+    modalBackdrop.classList.add('show');
+  });
+  grid.appendChild(article);
+});
+
+closeModal.addEventListener('click',()=>modalBackdrop.classList.remove('show'));
+modalBackdrop.addEventListener('click',e=>{if(e.target===modalBackdrop) modalBackdrop.classList.remove('show');});
+</script>
+
+  </script>
+</body>
+</html>
