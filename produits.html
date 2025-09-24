@@ -169,6 +169,102 @@
         border-radius: 30%;
     }
 
+    /* Responsive improvements specific to produits page */
+    /* Nav toggle (CSS-only) */
+    .nav-toggle-input{display:none}
+    .nav-toggle{display:none;cursor:pointer;padding:8px;border-radius:10px;background:transparent;border:none}
+    .nav-toggle svg{color:var(--primary-color)}
+
+    /* Make nav compact and scrollable on small screens */
+    nav ul{display:flex;gap:12px;align-items:center;overflow:auto;padding:6px}
+
+    @media (max-width:900px){
+      /* Header layout */
+      .nav{padding:12px 16px}
+      .brand h1{font-size:16px}
+      .nav-toggle{display:block}
+      nav ul{flex-direction:column;gap:8px;align-items:flex-start;max-height:0;overflow:hidden;transition:max-height .28s ease;padding:0}
+      .nav-toggle-input:checked + .nav-toggle + nav ul{max-height:420px;padding:8px 0}
+
+      /* Hero adjustments */
+      .hero-overlay{flex-direction:column;align-items:stretch;padding:18px}
+      .hero-overlay > div[style]{width:100%}
+      .hero-content{max-width:100%;padding:12px}
+      .hero-content h2{font-size:22px}
+      .video-bg{height:320px}
+      .glass-card{padding:12px}
+
+      /* Grid and cards */
+      main{margin:-28px auto 40px}
+      .grid{gap:14px}
+      .card .media{height:160px}
+    }
+
+    @media (max-width:520px){
+      .search input{width:120px}
+      .hero-cta{flex-direction:column}
+      .hero .btn{width:100%}
+      .card .media{height:140px}
+      .modal{width:95%; grid-template-columns:1fr}
+    }
+
+    /* Hide heavy autoplay video on small screens and fallback to image */
+    @media (max-width:760px){
+      .video-bg video{display:none}
+      .video-bg{background-image:linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.18)), url('image/image_1.webp'); background-size:cover; background-position:center}
+    }
+
+    /* ------------------ Header & Nav polish ------------------ */
+    /* allow header items to wrap gracefully */
+    .nav{flex-wrap:wrap}
+    nav ul{width:100%}
+    nav a{display:block}
+    nav li{min-height:44px; display:flex; align-items:center}
+    nav li:focus-within, nav li:focus, nav li:hover{outline:2px solid rgba(39,174,96,0.12);}
+
+    /* when menu is opened on mobile, show actions below the nav for clarity */
+    @media (max-width:900px){
+      .nav-toggle-input:checked + .nav-toggle + nav + .actions{order:4;width:100%;justify-content:flex-end;padding:8px 0}
+      .actions{flex-wrap:wrap}
+      .actions .search{flex:1 1 60%;min-width:140px}
+      .actions .btn{min-width:44px}
+    }
+
+    /* Improve focus and touch targets for accessibility */
+    .chip, .btn, .nav-toggle, nav li{touch-action:manipulation}
+    nav li{padding:12px 14px}
+    nav li a{width:100%}
+
+    /* ------------------ Modal improvements ------------------ */
+    /* Ensure modal never exceeds viewport and is scrollable internally */
+    .modal{
+      max-height: calc(100vh - 80px);
+      overflow:auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    .modal .left img{height:auto;max-height:60vh;object-fit:contain}
+
+    /* Mobile full-screen modal pattern */
+    @media (max-width:520px){
+      .modal{
+        width:100%;
+        height:100vh;
+        max-height:100vh;
+        border-radius:0;
+        display:grid;grid-template-columns:1fr;align-items:start;
+      }
+      .modal .left{min-height:220px}
+      .modal .right{padding:16px}
+      .modal .close{position:sticky; top:8px; right:10px; z-index:30}
+      .modal .left img{width:100%;height:auto;max-height:40vh}
+    }
+
+    /* small visual: make modal content comfortable to read on very narrow screens */
+    @media (max-width:360px){
+      .modal .right{padding:12px}
+      .desc, .specs{font-size:14px}
+    }
+
   </style>
 </head>
 <body>
@@ -184,6 +280,12 @@
         <div style="font-size:12px;color:var(--muted)">Boutique | Bien-être & Beauté</div>
       </div>
     </div>
+
+    <!-- Mobile menu toggle -->
+    <input type="checkbox" id="navToggle" class="nav-toggle-input" aria-hidden="true" />
+    <label for="navToggle" class="nav-toggle" aria-label="Ouvrir le menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+    </label>
 
     <nav>
       <ul>
